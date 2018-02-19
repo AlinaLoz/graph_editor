@@ -41,6 +41,7 @@
             this.yellowColor = new System.Windows.Forms.PictureBox();
             this.defaultColor = new System.Windows.Forms.PictureBox();
             this.panelTools = new System.Windows.Forms.Panel();
+            this.toolDelete = new System.Windows.Forms.PictureBox();
             this.toolRubber = new System.Windows.Forms.PictureBox();
             this.toolTreangle = new System.Windows.Forms.PictureBox();
             this.toolElipse = new System.Windows.Forms.PictureBox();
@@ -48,7 +49,6 @@
             this.toolLine = new System.Windows.Forms.PictureBox();
             this.toolCircle = new System.Windows.Forms.PictureBox();
             this.toolPen = new System.Windows.Forms.PictureBox();
-            this.toolDelete = new System.Windows.Forms.PictureBox();
             this.panelColor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.whiteColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blackColor)).BeginInit();
@@ -61,6 +61,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.yellowColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.defaultColor)).BeginInit();
             this.panelTools.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.toolDelete)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolRubber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolTreangle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolElipse)).BeginInit();
@@ -68,7 +69,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.toolLine)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolCircle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolPen)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.toolDelete)).BeginInit();
             this.SuspendLayout();
             // 
             // panelColor
@@ -217,6 +217,18 @@
             this.panelTools.Size = new System.Drawing.Size(83, 182);
             this.panelTools.TabIndex = 6;
             // 
+            // toolDelete
+            // 
+            this.toolDelete.BackColor = System.Drawing.Color.Transparent;
+            this.toolDelete.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("toolDelete.BackgroundImage")));
+            this.toolDelete.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.toolDelete.Location = new System.Drawing.Point(42, 130);
+            this.toolDelete.Name = "toolDelete";
+            this.toolDelete.Size = new System.Drawing.Size(30, 34);
+            this.toolDelete.TabIndex = 19;
+            this.toolDelete.TabStop = false;
+            this.toolDelete.Click += new System.EventHandler(this.toolDelete_Click);
+            // 
             // toolRubber
             // 
             this.toolRubber.BackColor = System.Drawing.Color.Transparent;
@@ -227,6 +239,7 @@
             this.toolRubber.Size = new System.Drawing.Size(30, 34);
             this.toolRubber.TabIndex = 18;
             this.toolRubber.TabStop = false;
+            this.toolRubber.Click += new System.EventHandler(this.toolRubber_Click);
             // 
             // toolTreangle
             // 
@@ -300,18 +313,6 @@
             this.toolPen.TabStop = false;
             this.toolPen.Click += new System.EventHandler(this.toolPen_Click);
             // 
-            // toolDelete
-            // 
-            this.toolDelete.BackColor = System.Drawing.Color.Transparent;
-            this.toolDelete.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("toolDelete.BackgroundImage")));
-            this.toolDelete.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.toolDelete.Location = new System.Drawing.Point(42, 130);
-            this.toolDelete.Name = "toolDelete";
-            this.toolDelete.Size = new System.Drawing.Size(30, 34);
-            this.toolDelete.TabIndex = 19;
-            this.toolDelete.TabStop = false;
-            this.toolDelete.Click += new System.EventHandler(this.toolDelete_Click);
-            // 
             // Paint
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -339,6 +340,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.yellowColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.defaultColor)).EndInit();
             this.panelTools.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.toolDelete)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolRubber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolTreangle)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolElipse)).EndInit();
@@ -346,7 +348,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.toolLine)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolCircle)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolPen)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.toolDelete)).EndInit();
             this.ResumeLayout(false);
 
         }

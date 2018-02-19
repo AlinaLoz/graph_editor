@@ -12,15 +12,23 @@ namespace GraphEditor
 {
     public partial class Paint : Form
     {
-        Graphics drawSurface; 
+        Graphics drawSurface;
+        enum TTools {PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE};
+
         Pen penReader = new Pen(Color.Black);
         Point startCoords = new Point(0, 0);
         Point endCoords = new Point(0, 0);
+        Point[] point = new Point[3];
+        int currSize = 0;
 
         Point prevEndCoords = new Point(0, 0);
         Pen prevPen = new Pen(Color.White);
+        int prevSize = 0;
+        Point[] prevPoint = new Point[3];
 
-        int stateMouse = 0, chooseTool = 0;
+        TTools currTool = TTools.PEN;
+        Boolean isMouseClick = false;
+
         public Paint()
         {
             InitializeComponent();
@@ -42,26 +50,7 @@ namespace GraphEditor
         {
             startCoords.X = e.X;
             startCoords.Y = e.Y;
-            switch (chooseTool) {
-                case 0:
-                    stateMouse = 1;
-                    break;
-                case 1:
-                    stateMouse = 2;
-                    break;
-                case 2:
-                    stateMouse = 3;
-                    break;
-                case 3:
-                    stateMouse = 4;
-                    break;
-                case 4:
-                    stateMouse = 5;
-                    break;
-                case 5:
-                    stateMouse = 6;
-                    break;
-            }
+            isMouseClick = true;
         }
 
 
@@ -77,6 +66,20 @@ namespace GraphEditor
                 drawSurface.DrawRectangle(penReader, endCoords.X, endCoords.Y, startCoords.X - endCoords.X, startCoords.Y - endCoords.Y);
         }
 
+        public static void MyDrawingEllipse(Point endCoords, Point startCoords, Pen penReader, Graphics drawSurface, int  sizeCircle)
+        {
+            if (endCoords.X > startCoords.X && endCoords.Y > startCoords.Y)
+                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, sizeCircle);
+            else if (endCoords.X > startCoords.X && endCoords.Y < startCoords.Y)
+                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, -sizeCircle);
+            else if (endCoords.X < startCoords.X && endCoords.Y > startCoords.Y)
+                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, sizeCircle);
+            else if (endCoords.X < startCoords.X && endCoords.Y < startCoords.Y)
+                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, -sizeCircle);
+        }
+
+
+
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
             drawSurface = this.CreateGraphics();
@@ -86,71 +89,53 @@ namespace GraphEditor
 
             endCoords.X = e.X;
             endCoords.Y = e.Y;
-            if (stateMouse == 1)
-            {
-                drawSurface.DrawLine(penReader, startCoords, endCoords);
-                startCoords = endCoords;
-            }
-            if (stateMouse == 2)
-            {
-                MyDrawingRectangle(prevEndCoords, startCoords, prevPen, drawSurface);
-                MyDrawingRectangle(endCoords, startCoords, penReader, drawSurface);
-            }
-            if (stateMouse == 3)
-            {
-                drawSurface.DrawEllipse(prevPen, startCoords.X, startCoords.Y, prevEndCoords.X - startCoords.X, prevEndCoords.Y - startCoords.Y);
-                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, endCoords.X - startCoords.X, endCoords.Y - startCoords.Y);
-            }
-            if (stateMouse == 4)
-            {
-                drawSurface.DrawLine(prevPen, startCoords, prevEndCoords);
-                drawSurface.DrawLine(penReader, startCoords, endCoords);
-            }
-            if (stateMouse == 5)
-            {
-                Point[] point = new Point[3];
-                Double lengthSiteTriangle = Math.Sqrt(Math.Pow((endCoords.X - startCoords.X), 2) + Math.Pow((endCoords.Y - startCoords.Y), 2)) / 2;
-                point[0].X = startCoords.X;
-                point[0].Y = startCoords.Y;
-                point[1].X = endCoords.X;
-                point[1].Y = endCoords.Y;
-                point[2].X = endCoords.X - 2 * (endCoords.X - startCoords.X);
-                point[2].Y = endCoords.Y;
-                drawSurface.Clear(Color.White);
-                drawSurface.DrawPolygon(penReader, point);
-            }
-            if (stateMouse == 6)
-            {
-                drawSurface.Clear(Color.White);
-                int sizeCircle = (Math.Abs(endCoords.X - startCoords.X) > Math.Abs(endCoords.Y - startCoords.Y)) ? Math.Abs(endCoords.Y - startCoords.Y) : Math.Abs(endCoords.X - startCoords.X);
-                if (endCoords.X > startCoords.X && endCoords.Y > startCoords.Y)
-                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, sizeCircle);
-                else if (endCoords.X > startCoords.X && endCoords.Y < startCoords.Y)
-                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, -sizeCircle);
-                else if (endCoords.X < startCoords.X && endCoords.Y > startCoords.Y)
-                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, sizeCircle);
-                else if (endCoords.X < startCoords.X && endCoords.Y < startCoords.Y)
-                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, -sizeCircle);
-            }
-            if (stateMouse == 7)
-            {
-                drawSurface.Clear(Color.White);
-                int sizeSquare = (Math.Abs(endCoords.X - startCoords.X) < Math.Abs(endCoords.Y - startCoords.Y)) ? Math.Abs(endCoords.Y - startCoords.Y) : Math.Abs(endCoords.X - startCoords.X);
-                if (endCoords.X > startCoords.X && endCoords.Y > startCoords.Y)
-                    drawSurface.DrawRectangle(penReader, startCoords.X, startCoords.Y, sizeSquare, sizeSquare);
-                else if (endCoords.X > startCoords.X && endCoords.Y < startCoords.Y)
-                    drawSurface.DrawRectangle(penReader, startCoords.X, endCoords.Y, sizeSquare, sizeSquare);
-                else if (endCoords.X < startCoords.X && endCoords.Y > startCoords.Y)
-                    drawSurface.DrawRectangle(penReader, endCoords.X, startCoords.Y, sizeSquare, sizeSquare);
-                else if (endCoords.X < startCoords.X && endCoords.Y < startCoords.Y)
-                    drawSurface.DrawRectangle(penReader, endCoords.X, endCoords.Y, sizeSquare, sizeSquare);
-            }
+            if (isMouseClick)
+                switch (currTool)
+                {
+                    case TTools.PEN:
+                        drawSurface.DrawLine(penReader, startCoords, endCoords);
+                        startCoords = endCoords;
+                        break;
+                    case TTools.RECTANGLE:
+                        MyDrawingRectangle(prevEndCoords, startCoords, prevPen, drawSurface);
+                        MyDrawingRectangle(endCoords, startCoords, penReader, drawSurface);
+                        break;
+                    case TTools.ELLIPSE:
+                        drawSurface.DrawEllipse(prevPen, startCoords.X, startCoords.Y, prevEndCoords.X - startCoords.X, prevEndCoords.Y - startCoords.Y);
+                        drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, endCoords.X - startCoords.X, endCoords.Y - startCoords.Y);
+                        break;
+                    case TTools.LINE:
+                        drawSurface.DrawLine(prevPen, startCoords, prevEndCoords);
+                        drawSurface.DrawLine(penReader, startCoords, endCoords);
+                        break;
+                    case TTools.TREANGLE:
+                        Array.Copy(point, prevPoint, point.Length);
+                        drawSurface.DrawPolygon(prevPen, prevPoint);
+
+                        Double lengthSiteTriangle = Math.Sqrt(Math.Pow((endCoords.X - startCoords.X), 2) + Math.Pow((endCoords.Y - startCoords.Y), 2)) / 2;
+
+                        point[0].X = startCoords.X;
+                        point[0].Y = startCoords.Y;
+                        point[1].X = endCoords.X;
+                        point[1].Y = endCoords.Y;
+                        point[2].X = endCoords.X - 2 * (endCoords.X - startCoords.X);
+                        point[2].Y = endCoords.Y;
+
+                        drawSurface.DrawPolygon(penReader, point);
+                        break;
+                    case TTools.CIRCLE:
+                        prevSize = currSize;
+                        MyDrawingEllipse(prevEndCoords, startCoords, prevPen, drawSurface, prevSize);
+                        currSize = (Math.Abs(endCoords.X - startCoords.X) > Math.Abs(endCoords.Y - startCoords.Y)) ? Math.Abs(endCoords.Y - startCoords.Y) : Math.Abs(endCoords.X - startCoords.X);
+                        MyDrawingEllipse(endCoords, startCoords, penReader, drawSurface, currSize);
+                        break;
+                }
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            stateMouse = 0;
-            chooseTool = 0;
+            isMouseClick = false;
+            Array.Clear(prevPoint, 0, prevPoint.Length);
         }
 
         private void whiteColor_Click(object sender, EventArgs e)
@@ -197,38 +182,44 @@ namespace GraphEditor
 
         private void toolPen_Click(object sender, EventArgs e)
         {
-            chooseTool = 0;
+            currTool = TTools.PEN;
         }
 
         private void toolLine_Click(object sender, EventArgs e)
         {
-            chooseTool = 3;
+            currTool = TTools.LINE;
         } 
 
         private void toolRectangle_Click(object sender, EventArgs e)
         {
-            chooseTool = 1;
+            currTool = TTools.RECTANGLE;
         }
 
         private void toolElipse_Click(object sender, EventArgs e)
         {
-            chooseTool = 2;
+            currTool = TTools.ELLIPSE;
         }
 
         private void toolTreangle_Click(object sender, EventArgs e)
         {
-            chooseTool = 4;
+            currTool = TTools.TREANGLE;
         }
 
         private void toolCircle_Click(object sender, EventArgs e)
         {
-            chooseTool = 5;
+            currTool = TTools.CIRCLE;
         }
 
         private void toolDelete_Click(object sender, EventArgs e)
         {
             drawSurface = this.CreateGraphics();
             drawSurface.Clear(Color.White);
+        }
+
+        private void toolRubber_Click(object sender, EventArgs e)
+        {
+            penReader.Color = Color.White;
+            penReader.Width = 25;
         }
     }
 }
