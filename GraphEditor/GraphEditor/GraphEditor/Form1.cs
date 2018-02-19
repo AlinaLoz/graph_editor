@@ -22,12 +22,6 @@ namespace GraphEditor
             InitializeComponent();
         }
 
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
- 
-        }
-
         private void yellowColor_Click(object sender, EventArgs e)
         {
             penReader.Color = yellowColor.BackColor;
@@ -51,7 +45,7 @@ namespace GraphEditor
         {
             startCoords.X = e.X;
             startCoords.Y = e.Y;
-            if (!checkBox1.Checked && !checkBox2.Checked && !checkBox3.Checked && !checkBox4.Checked)
+            if (!checkBox1.Checked && !checkBox2.Checked && !checkBox3.Checked && !checkBox4.Checked && !checkBox5.Checked)
             {
                 stateMouse = 1;
             }
@@ -71,7 +65,7 @@ namespace GraphEditor
             {
                 stateMouse = 5;
             }
-            else if (checkBox4.Checked) {
+            else if (checkBox5.Checked) {
                 stateMouse = 6;
             }
               
@@ -95,7 +89,10 @@ namespace GraphEditor
                     drawSurface.DrawRectangle(penReader, startCoords.X, startCoords.Y, endCoords.X - startCoords.X, endCoords.Y - startCoords.Y);
                 else if (endCoords.X > startCoords.X && endCoords.Y < startCoords.Y)
                     drawSurface.DrawRectangle(penReader, startCoords.X, endCoords.Y, endCoords.X - startCoords.X, startCoords.Y - endCoords.Y);
-                // else if (endCoords.X > startCoords.X && endCoords.Y < startCoords.Y)
+                else if (endCoords.X < startCoords.X && endCoords.Y > startCoords.Y)
+                    drawSurface.DrawRectangle(penReader, endCoords.X, startCoords.Y, startCoords.X - endCoords.X, endCoords.Y - startCoords.Y);
+                else if (endCoords.X < startCoords.X && endCoords.Y < startCoords.Y)
+                    drawSurface.DrawRectangle(penReader, endCoords.X, endCoords.Y, startCoords.X - endCoords.X, startCoords.Y - endCoords.Y);
             }
             if (stateMouse == 3)
             {
@@ -123,13 +120,26 @@ namespace GraphEditor
             if (stateMouse == 6)
             {
                 drawSurface.Clear(Color.White);
-                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, endCoords.X - startCoords.X, endCoords.Y - startCoords.Y);
+                int sizeCircle = (Math.Abs(endCoords.X - startCoords.X) > Math.Abs(endCoords.Y - startCoords.Y)) ? Math.Abs(endCoords.Y - startCoords.Y) : Math.Abs(endCoords.X - startCoords.X);
+                if (endCoords.X > startCoords.X && endCoords.Y > startCoords.Y)
+                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, sizeCircle);
+                else if (endCoords.X > startCoords.X && endCoords.Y < startCoords.Y)
+                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, -sizeCircle);
+                else if (endCoords.X < startCoords.X && endCoords.Y > startCoords.Y)
+                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, sizeCircle);
+                else if (endCoords.X < startCoords.X && endCoords.Y < startCoords.Y)
+                    drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, -sizeCircle);
             }
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
             stateMouse = 0;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
