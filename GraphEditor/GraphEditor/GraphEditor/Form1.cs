@@ -13,9 +13,9 @@ namespace GraphEditor
     public partial class Paint : Form
     {
         Graphics drawSurface;
-        enum TTools {PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE};
+        enum TTools {PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER};
 
-        Pen penReader = new Pen(Color.Black);
+        Pen penReader = new Pen(Color.Black);    
         Point startCoords = new Point(0, 0);
         Point endCoords = new Point(0, 0);
         Point[] point = new Point[3];
@@ -78,8 +78,6 @@ namespace GraphEditor
                 drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, -sizeCircle);
         }
 
-
-
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
             drawSurface = this.CreateGraphics();
@@ -89,6 +87,7 @@ namespace GraphEditor
 
             endCoords.X = e.X;
             endCoords.Y = e.Y;
+
             if (isMouseClick)
                 switch (currTool)
                 {
@@ -129,13 +128,29 @@ namespace GraphEditor
                         currSize = (Math.Abs(endCoords.X - startCoords.X) > Math.Abs(endCoords.Y - startCoords.Y)) ? Math.Abs(endCoords.Y - startCoords.Y) : Math.Abs(endCoords.X - startCoords.X);
                         MyDrawingEllipse(endCoords, startCoords, penReader, drawSurface, currSize);
                         break;
+                    case TTools.RUBBER:
+                        drawSurface.DrawLine(penReader, startCoords, endCoords);
+                        startCoords = endCoords;
+                        break;
                 }
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
             isMouseClick = false;
+            currTool = TTools.PEN;
+
             Array.Clear(prevPoint, 0, prevPoint.Length);
+            Array.Clear(point, 0, prevPoint.Length);
+            penReader.Width = 1;
+
+            startCoords.X = 0; startCoords.Y = 0;
+            endCoords.X = 0; endCoords.Y = 0;
+            currSize = 0; prevSize = 0;
+            prevEndCoords.X = 0; prevEndCoords.Y = 0;
+            penReader.Color = defaultColor.BackColor;
+
+            prevPen.Color = Color.White;
         }
 
         private void whiteColor_Click(object sender, EventArgs e)
@@ -218,8 +233,9 @@ namespace GraphEditor
 
         private void toolRubber_Click(object sender, EventArgs e)
         {
-            penReader.Color = Color.White;
             penReader.Width = 25;
+            currTool = TTools.RUBBER;
+            penReader.Color = Color.White;
         }
     }
 }
