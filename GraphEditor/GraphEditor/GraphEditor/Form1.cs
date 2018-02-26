@@ -12,7 +12,7 @@ namespace GraphEditor
 {
     public partial class Paint : Form
     {
-        enum TTools { PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER };
+        enum TTools { PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER, ZVEZDA};
         Graphics drawSurface;
         Point startCoords = new Point(0, 0);
         Point endCoords = new Point(0, 0);
@@ -23,6 +23,16 @@ namespace GraphEditor
             new Point(0, 0),
             new Point(0, 0),
         };
+
+        Point[] pointZvzda = new Point[5] {
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 0),
+        };
+
+
 
         Pen penReader = new Pen(Color.Black);
         Pen prevPen = new Pen(Color.White);
@@ -98,6 +108,13 @@ namespace GraphEditor
                         drawSurface.DrawLine(penReader, startCoords, endCoords);
                         startCoords = endCoords;
                         break;
+                    case TTools.ZVEZDA:
+                        Zvezda zvezda = new Zvezda(drawSurface);
+                        zvezda.Clear(pointZvzda, prevPen);
+                        zvezda.Draw(prevEndCoords, startCoords, endCoords, prevPen, penReader);
+                        pointZvzda = zvezda.returnCoords();
+                        break;
+
                 }
         }
 
@@ -196,6 +213,16 @@ namespace GraphEditor
             penReader.Width = 25;
             currTool = TTools.RUBBER;
             penReader.Color = Color.White;
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            currTool = TTools.ZVEZDA;
+        }
+
+        private void Paint_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
