@@ -49,7 +49,7 @@
             this.toolLine = new System.Windows.Forms.PictureBox();
             this.toolCircle = new System.Windows.Forms.PictureBox();
             this.toolPen = new System.Windows.Forms.PictureBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureDrawing = new System.Windows.Forms.PictureBox();
             this.panelColor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.whiteColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blackColor)).BeginInit();
@@ -70,7 +70,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.toolLine)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolCircle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolPen)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDrawing)).BeginInit();
             this.SuspendLayout();
             // 
             // panelColor
@@ -90,7 +90,7 @@
             this.panelColor.Controls.Add(this.defaultColor);
             this.panelColor.Location = new System.Drawing.Point(1, 334);
             this.panelColor.Name = "panelColor";
-            this.panelColor.Size = new System.Drawing.Size(378, 67);
+            this.panelColor.Size = new System.Drawing.Size(611, 67);
             this.panelColor.TabIndex = 0;
             // 
             // whiteColor
@@ -206,7 +206,6 @@
             // 
             this.panelTools.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panelTools.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panelTools.Controls.Add(this.pictureBox1);
             this.panelTools.Controls.Add(this.toolDelete);
             this.panelTools.Controls.Add(this.toolRubber);
             this.panelTools.Controls.Add(this.toolTreangle);
@@ -217,7 +216,7 @@
             this.panelTools.Controls.Add(this.toolPen);
             this.panelTools.Location = new System.Drawing.Point(1, 0);
             this.panelTools.Name = "panelTools";
-            this.panelTools.Size = new System.Drawing.Size(83, 215);
+            this.panelTools.Size = new System.Drawing.Size(83, 328);
             this.panelTools.TabIndex = 6;
             // 
             // toolDelete
@@ -231,6 +230,7 @@
             this.toolDelete.TabIndex = 19;
             this.toolDelete.TabStop = false;
             this.toolDelete.Click += new System.EventHandler(this.toolDelete_Click);
+            this.toolDelete.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolDelete_MouseUp);
             // 
             // toolRubber
             // 
@@ -316,15 +316,17 @@
             this.toolPen.TabStop = false;
             this.toolPen.Click += new System.EventHandler(this.toolPen_Click);
             // 
-            // pictureBox1
+            // pictureDrawing
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.DarkGray;
-            this.pictureBox1.Location = new System.Drawing.Point(6, 171);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(30, 27);
-            this.pictureBox1.TabIndex = 20;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.pictureDrawing.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureDrawing.Location = new System.Drawing.Point(85, 0);
+            this.pictureDrawing.Name = "pictureDrawing";
+            this.pictureDrawing.Size = new System.Drawing.Size(527, 328);
+            this.pictureDrawing.TabIndex = 7;
+            this.pictureDrawing.TabStop = false;
+            this.pictureDrawing.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureDrawing_MouseDown);
+            this.pictureDrawing.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureDrawing_MouseMove);
+            this.pictureDrawing.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureDrawing_MouseUp);
             // 
             // Paint
             // 
@@ -332,16 +334,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(612, 402);
+            this.Controls.Add(this.pictureDrawing);
             this.Controls.Add(this.panelTools);
             this.Controls.Add(this.panelColor);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.MinimumSize = new System.Drawing.Size(628, 441);
             this.Name = "Paint";
             this.Text = "GraphicReader";
-            this.Load += new System.EventHandler(this.Paint_Load);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             this.panelColor.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.whiteColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.blackColor)).EndInit();
@@ -362,7 +361,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.toolLine)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolCircle)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolPen)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDrawing)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -389,7 +388,7 @@
         private System.Windows.Forms.PictureBox toolCircle;
         private System.Windows.Forms.PictureBox toolPen;
         private System.Windows.Forms.PictureBox toolDelete;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox pictureDrawing;
     }
 }
 

@@ -10,7 +10,7 @@ namespace GraphEditor
 {
     abstract class Shape
     {
-        public abstract void Draw(Point prevEndCoords, Point startCoords, Point endCoords, Pen prevPen, Pen penReader);
+        public abstract void Draw(Point startCoords, Point endCoords, Pen penReader);
 
         protected static float GetWidthShape(Point first, Point second) {
             return Math.Abs(first.X - second.X);

@@ -29,9 +29,8 @@ namespace GraphEditor
             return currSize;
         }
 
-        public override void Draw(Point prevEndCoords, Point startCoords, Point endCoords, Pen prevPen, Pen penReader)
+        public override void Draw(Point startCoords, Point endCoords, Pen penReader)
         {
-            MyDrawingEllipse(prevEndCoords, startCoords, prevPen, drawSurface, prevSize);
             currSize = GetSizeShape(startCoords, endCoords);
              MyDrawingEllipse(endCoords, startCoords, penReader, drawSurface, currSize);
         }

@@ -12,36 +12,32 @@ namespace GraphEditor
 {
     public partial class Paint : Form
     {
-        enum TTools { PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER, ZVEZDA};
-        Graphics drawSurface;
+        enum TTools { PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER };
+
         Point startCoords = new Point(0, 0);
         Point endCoords = new Point(0, 0);
-        Point prevEndCoords = new Point(0, 0);
         float diametrCircle = 0;
-        Point[] point = new Point[3] {
-            new Point(0, 0),
-            new Point(0, 0),
-            new Point(0, 0),
-        };
 
-        Point[] pointZvzda = new Point[5] {
-            new Point(0, 0),
-            new Point(0, 0),
-            new Point(0, 0),
-            new Point(0, 0),
-            new Point(0, 0),
-        };
 
+        Graphics drawSurface;
+        Bitmap btmFront;
+        Graphics grFront;
 
 
         Pen penReader = new Pen(Color.Black);
-        Pen prevPen = new Pen(Color.White);
+        Pen rubberPen = new Pen(Color.White, 20);
         TTools currTool = TTools.PEN;
-        Boolean isMouseClick = false;
-        
+        Boolean isMouseClick;
+
         public Paint()
         {
             InitializeComponent();
+
+            btmFront = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+            grFront = Graphics.FromImage(btmFront);
+            pictureDrawing.BackgroundImage = btmFront;
+
+            isMouseClick = false;
         }
 
         private void yellowColor_Click(object sender, EventArgs e)
@@ -56,79 +52,46 @@ namespace GraphEditor
             defaultColor.BackColor = redColor.BackColor;
         }
 
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
+
+        private void ToolDraw()
         {
-            startCoords.X = e.X;
-            startCoords.Y = e.Y;
-            isMouseClick = true;
+            switch (currTool)
+            {
+                case TTools.PEN:
+                    drawSurface = grFront;
+                    drawSurface.DrawLine(penReader, startCoords, endCoords);
+                    startCoords = endCoords;
+                    break;
+                case TTools.RECTANGLE:
+                    Rectangle rectangle = new Rectangle(drawSurface);
+                    rectangle.Draw(startCoords, endCoords, penReader);
+                    break;
+                case TTools.ELLIPSE:
+                    Ellipse ellipse = new Ellipse(drawSurface);
+                    ellipse.Draw(startCoords, endCoords, penReader);
+                    break;
+                case TTools.LINE:
+                    Line line = new Line(drawSurface);
+                    line.Draw(startCoords, endCoords, penReader);
+                    break;
+                case TTools.TREANGLE:
+                    Triangle triangle = new Triangle(drawSurface);
+                    triangle.Draw(startCoords, endCoords, penReader);
+                    break;
+                case TTools.CIRCLE:
+                    Circle circle = new Circle(drawSurface);
+                    circle.getSize(diametrCircle);
+                    circle.Draw(startCoords, endCoords, penReader);
+                    diametrCircle = circle.returnSize();
+                    break;
+                case TTools.RUBBER:
+                    drawSurface = grFront;
+                    drawSurface.DrawLine(penReader, startCoords, endCoords);
+                    startCoords = endCoords;
+                    break;
+            }
         }
 
-       
-        private void Form1_MouseMove(object sender, MouseEventArgs e)
-        {
-            drawSurface = this.CreateGraphics();
-            prevEndCoords.X = endCoords.X;
-            prevEndCoords.Y = endCoords.Y;
-
-            endCoords.X = e.X;
-            endCoords.Y = e.Y;
-
-            if (isMouseClick)
-                switch (currTool)
-                {
-                    case TTools.PEN:
-                        drawSurface.DrawLine(penReader, startCoords, endCoords);
-                        startCoords = endCoords;
-                        break;
-                    case TTools.RECTANGLE:
-                        Rectangle rectangle = new Rectangle(drawSurface);
-                        rectangle.Draw(prevEndCoords,  startCoords,  endCoords,  prevPen,  penReader);
-                        break;
-                    case TTools.ELLIPSE:
-                        Ellipse ellipse = new Ellipse(drawSurface);
-                        ellipse.Draw(prevEndCoords, startCoords, endCoords, prevPen, penReader);
-                        break;
-                    case TTools.LINE:
-                        Line line = new Line(drawSurface);
-                        line.Draw(prevEndCoords, startCoords, endCoords, prevPen, penReader);
-                        break;
-                    case TTools.TREANGLE:
-                        Triangle triangle = new Triangle(drawSurface);
-                        triangle.Clear(point, prevPen);
-                        triangle.Draw(prevEndCoords, startCoords, endCoords, prevPen, penReader);
-                        point = triangle.returnCoords();
-                        break;
-                    case TTools.CIRCLE:
-                        Circle circle = new Circle(drawSurface);
-                        circle.getSize(diametrCircle);
-                        circle.Draw(prevEndCoords, startCoords, endCoords, prevPen, penReader);
-                        diametrCircle = circle.returnSize();
-                        break;
-                    case TTools.RUBBER:
-                        drawSurface.DrawLine(penReader, startCoords, endCoords);
-                        startCoords = endCoords;
-                        break;
-                    case TTools.ZVEZDA:
-                        Zvezda zvezda = new Zvezda(drawSurface);
-                        zvezda.Clear(pointZvzda, prevPen);
-                        zvezda.Draw(prevEndCoords, startCoords, endCoords, prevPen, penReader);
-                        pointZvzda = zvezda.returnCoords();
-                        break;
-
-                }
-        }
-
-        private void Form1_MouseUp(object sender, MouseEventArgs e)
-        {
-            isMouseClick = false;
-            currTool = TTools.PEN;
-            penReader.Width = 1;
-            endCoords.X = 0; endCoords.Y = 0;
-            prevEndCoords.X = 0; prevEndCoords.Y = 0;
-            penReader.Color = defaultColor.BackColor;
-
-            prevPen.Color = Color.White;
-        }
 
         private void whiteColor_Click(object sender, EventArgs e)
         {
@@ -180,7 +143,7 @@ namespace GraphEditor
         private void toolLine_Click(object sender, EventArgs e)
         {
             currTool = TTools.LINE;
-        } 
+        }
 
         private void toolRectangle_Click(object sender, EventArgs e)
         {
@@ -204,8 +167,10 @@ namespace GraphEditor
 
         private void toolDelete_Click(object sender, EventArgs e)
         {
-            drawSurface = this.CreateGraphics();
-            drawSurface.Clear(Color.White);
+            btmFront.Dispose();
+            pictureDrawing.BackgroundImage = null;
+            pictureDrawing.Image = null;
+
         }
 
         private void toolRubber_Click(object sender, EventArgs e)
@@ -215,14 +180,48 @@ namespace GraphEditor
             penReader.Color = Color.White;
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
+        private void pictureDrawing_MouseDown(object sender, MouseEventArgs e)
         {
-            currTool = TTools.ZVEZDA;
+            startCoords.X = e.X;
+            startCoords.Y = e.Y;
+            isMouseClick = true;
         }
 
-        private void Paint_Load(object sender, EventArgs e)
+        private void pictureDrawing_MouseMove(object sender, MouseEventArgs e)
         {
+            Bitmap bm = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+            Graphics g = Graphics.FromImage(bm);
+            drawSurface = g;
 
+            if (isMouseClick)
+            {
+                ToolDraw();
+                pictureDrawing.Image = bm;
+            }
+            endCoords.X = e.X;
+            endCoords.Y = e.Y;
+        }
+
+        private void pictureDrawing_MouseUp(object sender, MouseEventArgs e)
+        {
+            isMouseClick = false;
+            //currTool = TTools.PEN;
+
+            penReader.Width = 1;
+            penReader.Color = defaultColor.BackColor;
+
+            drawSurface = grFront;
+            ToolDraw();
+        }
+
+        private void toolDelete_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (pictureDrawing.Image == null) {
+                btmFront = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                grFront = Graphics.FromImage(btmFront);
+                pictureDrawing.BackgroundImage = btmFront;
+                pictureDrawing.Image = btmFront;
+            }
         }
     }
 }

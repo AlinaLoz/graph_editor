@@ -15,9 +15,8 @@ namespace GraphEditor
             this.drawSurface = drawSurface;
         }
 
-        public override void Draw(Point prevEndCoords, Point startCoords, Point endCoords, Pen prevPen, Pen penReader)
+        public override void Draw(Point startCoords, Point endCoords, Pen penReader)
         {
-            drawSurface.DrawEllipse(prevPen, startCoords.X, startCoords.Y, prevEndCoords.X - startCoords.X, prevEndCoords.Y - startCoords.Y);
             drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, endCoords.X - startCoords.X, endCoords.Y - startCoords.Y);
         }
     }
