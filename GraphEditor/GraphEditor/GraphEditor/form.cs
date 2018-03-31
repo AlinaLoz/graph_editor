@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Microsoft.Win32;
 
 namespace GraphEditor
 {
@@ -24,6 +23,8 @@ namespace GraphEditor
         Boolean isMouseClick;
         String nameWorkFile;
 
+        ListShape listShape;
+
         public Paint()
         {
             InitializeComponent();
@@ -32,7 +33,7 @@ namespace GraphEditor
             grFront = Graphics.FromImage(btmFront);
             pictureDrawing.BackgroundImage = btmFront;
             nameWorkFile = "";
-
+            listShape = new ListShape();
             isMouseClick = false;
         }
 
@@ -54,8 +55,12 @@ namespace GraphEditor
             switch (currTool)
             {
                 case TTools.PEN:
-                    drawSurface = grFront;
+                    Bitmap bm = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                    Graphics g = Graphics.FromImage(bm);
+                    drawSurface = g;
                     drawSurface.DrawLine(penReader, startCoords, endCoords);
+                    grFront.DrawImage(bm, 0, 0);
+                    listShape.AddShape(bm);                    
                     startCoords = endCoords;
                     break;
                 case TTools.RECTANGLE:
@@ -166,7 +171,6 @@ namespace GraphEditor
             btmFront.Dispose();
             pictureDrawing.BackgroundImage = null;
             pictureDrawing.Image = null;
-
         }
 
         private void toolRubber_Click(object sender, EventArgs e)
@@ -194,6 +198,7 @@ namespace GraphEditor
                 ToolDraw();
                 pictureDrawing.Image = bm;
             }
+
             endCoords.X = e.X;
             endCoords.Y = e.Y;
         }
@@ -205,8 +210,13 @@ namespace GraphEditor
             penReader.Width = 1;
             penReader.Color = defaultColor.BackColor;
 
-            drawSurface = grFront;
+            Bitmap bm = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+            Graphics g = Graphics.FromImage(bm);
+
+            drawSurface = g;
             ToolDraw();
+            grFront.DrawImage(bm, 0, 0);
+            listShape.AddShape(bm);
         }
 
         private void toolDelete_MouseUp(object sender, MouseEventArgs e)
@@ -224,34 +234,35 @@ namespace GraphEditor
             SaveFile saveFile = new SaveFile();
             if (string.Equals(nameWorkFile, ""))
             {
-                if (MessageBox.Show("Save As File?", "Save as", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-                    saveFile.initTool(".bmp", "Сохранить картинку как...", "Bitmap (.bmp)|*.bmp", true);
-                    saveFile.workWithFile(pictureDrawing, ref btmFront, ref grFront, ref nameWorkFile);
+                if (MessageBox.Show("Save As File?", "Save as", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    saveFile.initTool("Сохранить картинку как...", true);
+                    saveFile.workWithFile(listShape, pictureDrawing, ref btmFront, ref grFront, ref nameWorkFile);
                 }
             }
-            else {
-                saveFile.save(pictureDrawing, ref btmFront, ref grFront,  nameWorkFile);
+            else
+            {
+                saveFile.save(listShape, nameWorkFile);
             }
         }
 
         private void saveAsКакToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFile saveFile = new SaveFile();
-            saveFile.initTool(".bmp", "Сохранить картинку как...", "Bitmap (.bmp)|*.bmp", true);
-            saveFile.workWithFile(pictureDrawing, ref btmFront, ref grFront, ref  nameWorkFile);
+            saveFile.initTool("Сохранить картинку как...", true);
+            saveFile.workWithFile(listShape, pictureDrawing, ref btmFront, ref grFront, ref nameWorkFile);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFile openFile = new OpenFile();
-            openFile.initTool(".bmp", "Открыть картинку", "Bitmap (.bmp)|*.bmp", true);
-            openFile.workWithFile(pictureDrawing, ref btmFront, ref grFront, ref  nameWorkFile);
+            openFile.initTool("Открыть картинку", true);
+            openFile.workWithFile(listShape, pictureDrawing, ref btmFront, ref grFront, ref nameWorkFile);
         }
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
         {
             saveToolStripMenuItem_Click(sender, e);
-            
         }
 
         private void creatToolStripMenuItem_MouseUp(object sender, MouseEventArgs e)

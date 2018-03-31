@@ -1,7 +1,9 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
-using System.IO;
 using System;
+using System.IO;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace GraphEditor
 {
@@ -14,32 +16,45 @@ namespace GraphEditor
             opendialog = new OpenFileDialog();
         }
 
-        public void workWithFile(PictureBox pictureDrawing, ref  Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile)
+        public void workWithFile(ListShape listShape, PictureBox pictureDrawing, ref Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile)
         {
-            DialogResult dialogResult = opendialog.ShowDialog();
-            nameWorkFile = Path.GetFullPath(opendialog.FileName);
-            if (!String.Equals(opendialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort) ;
+            try
             {
-                try
+                DialogResult dialogResult = opendialog.ShowDialog();
+                nameWorkFile = Path.GetFullPath(opendialog.FileName);
+                if (!String.Equals(opendialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort)
                 {
-                    Image image = Image.FromFile(opendialog.FileName);
+                    DataContractJsonSerializer jsonFormatter = new DataContractJsonSerializer(listShape.GetType());
+                    using (FileStream fs = new FileStream(nameWorkFile, FileMode.OpenOrCreate))
+                    {
+                        listShape.Remove();
+                        listShape = jsonFormatter.ReadObject(fs) as ListShape;
+                        fs.Close();
+                    }
+                    Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                    Graphics tempGr = Graphics.FromImage(bitmap);
+                    tempGr.Clear(Color.White);
+
+                    listShape.WriteOnImage(tempGr);
+
                     btmFront.Dispose();
-                    btmFront = new Bitmap(image, pictureDrawing.Width, pictureDrawing.Height);
+                    btmFront = new Bitmap(bitmap, pictureDrawing.Width, pictureDrawing.Height);
                     grFront = Graphics.FromImage(btmFront);
+
                     pictureDrawing.BackgroundImage = btmFront;
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString(), "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }               
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
-        public void initTool(string exp, string title, string filter, bool CheckPathExists) {
-            opendialog.DefaultExt = exp;
+        public void initTool(string title, bool CheckPathExists) {
+            opendialog.DefaultExt = "json";
             opendialog.Title = title;
             opendialog.CheckPathExists = CheckPathExists;
-            opendialog.Filter = filter;
         }
     }
 }
