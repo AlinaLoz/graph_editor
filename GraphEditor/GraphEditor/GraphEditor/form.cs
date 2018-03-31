@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace GraphEditor
 {
@@ -23,11 +18,11 @@ namespace GraphEditor
         Bitmap btmFront;
         Graphics grFront;
 
-
         Pen penReader = new Pen(Color.Black);
         Pen rubberPen = new Pen(Color.White, 20);
         TTools currTool = TTools.PEN;
         Boolean isMouseClick;
+        String nameWorkFile;
 
         public Paint()
         {
@@ -36,6 +31,7 @@ namespace GraphEditor
             btmFront = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
             grFront = Graphics.FromImage(btmFront);
             pictureDrawing.BackgroundImage = btmFront;
+            nameWorkFile = "";
 
             isMouseClick = false;
         }
@@ -205,7 +201,6 @@ namespace GraphEditor
         private void pictureDrawing_MouseUp(object sender, MouseEventArgs e)
         {
             isMouseClick = false;
-            //currTool = TTools.PEN;
 
             penReader.Width = 1;
             penReader.Color = defaultColor.BackColor;
@@ -222,6 +217,48 @@ namespace GraphEditor
                 pictureDrawing.BackgroundImage = btmFront;
                 pictureDrawing.Image = btmFront;
             }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFile saveFile = new SaveFile();
+            if (string.Equals(nameWorkFile, ""))
+            {
+                if (MessageBox.Show("Save As File?", "Save as", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+                    saveFile.initTool(".bmp", "Сохранить картинку как...", "Bitmap (.bmp)|*.bmp", true);
+                    saveFile.workWithFile(pictureDrawing, ref btmFront, ref grFront, ref nameWorkFile);
+                }
+            }
+            else {
+                saveFile.save(pictureDrawing, ref btmFront, ref grFront,  nameWorkFile);
+            }
+        }
+
+        private void saveAsКакToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFile saveFile = new SaveFile();
+            saveFile.initTool(".bmp", "Сохранить картинку как...", "Bitmap (.bmp)|*.bmp", true);
+            saveFile.workWithFile(pictureDrawing, ref btmFront, ref grFront, ref  nameWorkFile);
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFile openFile = new OpenFile();
+            openFile.initTool(".bmp", "Открыть картинку", "Bitmap (.bmp)|*.bmp", true);
+            openFile.workWithFile(pictureDrawing, ref btmFront, ref grFront, ref  nameWorkFile);
+        }
+
+        private void createToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveToolStripMenuItem_Click(sender, e);
+            
+        }
+
+        private void creatToolStripMenuItem_MouseUp(object sender, MouseEventArgs e)
+        {
+            toolDelete_Click(sender, e);
+            toolDelete_MouseUp(sender, e);
+            nameWorkFile = "";
         }
     }
 }
