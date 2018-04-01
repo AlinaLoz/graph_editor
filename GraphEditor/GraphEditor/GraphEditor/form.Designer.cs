@@ -359,7 +359,7 @@
             // creatToolStripMenuItem
             // 
             this.creatToolStripMenuItem.Name = "creatToolStripMenuItem";
-            this.creatToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.creatToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.creatToolStripMenuItem.Text = "Create";
             this.creatToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
             this.creatToolStripMenuItem.MouseUp += new System.Windows.Forms.MouseEventHandler(this.creatToolStripMenuItem_MouseUp);
@@ -367,21 +367,21 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsКакToolStripMenuItem_Click);
             // 
@@ -402,6 +402,7 @@
             this.MinimumSize = new System.Drawing.Size(628, 441);
             this.Name = "Paint";
             this.Text = "GraphicReader";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Paint_KeyDown);
             this.panelColor.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.whiteColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.blackColor)).EndInit();

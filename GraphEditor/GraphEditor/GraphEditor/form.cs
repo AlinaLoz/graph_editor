@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -7,11 +8,11 @@ namespace GraphEditor
     public partial class Paint : Form
     {
         enum TTools { PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER };
+        Keys prevKey, currKey;
 
         Point startCoords = new Point(0, 0);
         Point endCoords = new Point(0, 0);
         float diametrCircle = 0;
-
 
         Graphics drawSurface;
         Bitmap btmFront;
@@ -24,17 +25,20 @@ namespace GraphEditor
         String nameWorkFile;
 
         ListShape listShape;
+        bool isCtrZ;
 
         public Paint()
         {
             InitializeComponent();
-
             btmFront = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
             grFront = Graphics.FromImage(btmFront);
             pictureDrawing.BackgroundImage = btmFront;
             nameWorkFile = "";
             listShape = new ListShape();
             isMouseClick = false;
+            prevKey = new Keys();
+            currKey = new Keys();
+            isCtrZ = false;
         }
 
         private void yellowColor_Click(object sender, EventArgs e)
@@ -139,6 +143,7 @@ namespace GraphEditor
         private void toolPen_Click(object sender, EventArgs e)
         {
             currTool = TTools.PEN;
+
         }
 
         private void toolLine_Click(object sender, EventArgs e)
@@ -217,6 +222,7 @@ namespace GraphEditor
             ToolDraw();
             grFront.DrawImage(bm, 0, 0);
             listShape.AddShape(bm);
+            listShape.bitmapCancel.Add(true);
         }
 
         private void toolDelete_MouseUp(object sender, MouseEventArgs e)
@@ -270,6 +276,40 @@ namespace GraphEditor
             toolDelete_Click(sender, e);
             toolDelete_MouseUp(sender, e);
             nameWorkFile = "";
+        }
+
+        private void Paint_KeyDown(object sender, KeyEventArgs e)
+        {
+            prevKey = currKey;
+            currKey = e.KeyCode;
+            Boolean isKey = false;
+            if (prevKey == Keys.ControlKey && e.KeyCode == Keys.Z)
+            {
+                listShape.CtrlZ();
+                isKey = true;
+                isCtrZ = true;
+            }
+            if (prevKey == Keys.ControlKey && e.KeyCode == Keys.Y)
+            {
+                listShape.CtrlY(isCtrZ);
+                isKey = true;
+                isCtrZ = false;
+            }
+            if (isKey)
+            {
+                 Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                 Graphics tempGr = Graphics.FromImage(bitmap);
+                 tempGr.Clear(Color.White);
+
+                 listShape.WriteOnImage(tempGr);
+
+                 btmFront.Dispose();
+                 btmFront = new Bitmap(bitmap, pictureDrawing.Width, pictureDrawing.Height);
+                 grFront = Graphics.FromImage(btmFront);
+
+                 pictureDrawing.BackgroundImage = btmFront;
+                 pictureDrawing.Image = btmFront;
+            }
         }
     }
 }

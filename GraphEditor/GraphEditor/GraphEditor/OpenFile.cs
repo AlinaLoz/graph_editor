@@ -42,6 +42,7 @@ namespace GraphEditor
                     grFront = Graphics.FromImage(btmFront);
 
                     pictureDrawing.BackgroundImage = btmFront;
+                    pictureDrawing.Image = btmFront;
                 }
             }
             catch (Exception ex)
