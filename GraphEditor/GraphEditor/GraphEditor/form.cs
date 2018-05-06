@@ -35,7 +35,9 @@ namespace GraphEditor
             grFront = Graphics.FromImage(btmFront);
             pictureDrawing.BackgroundImage = btmFront;
             nameWorkFile = "";
-            listShape = new ListShape();
+
+            listShape = ListShape.getInstance();
+
             isMouseClick = false;
             prevKey = new Keys();
             currKey = new Keys();

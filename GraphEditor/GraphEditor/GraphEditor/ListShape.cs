@@ -7,9 +7,12 @@ using System.Windows.Forms;
 
 namespace GraphEditor
 {
-     class InfoAboutStructute
+    [DataContract]
+    class InfoAboutStructute
      {
+        [DataMember]
         public Point start, end;
+        [DataMember]
         public TTools tools;
 
         public InfoAboutStructute(Point start, Point end, TTools tools)
@@ -29,21 +32,33 @@ namespace GraphEditor
     [DataContract]
     class ListShape
     {
+        private static ListShape instance;
+
         [DataMember]
         public List<byte[]> listShapeByte;
 
+        [DataMember]
         public List<bool> bitmapCancel;
 
+        [DataMember]
         public List<InfoAboutStructute> listInfoAboutStructure;
 
         public int CountBitmap { get { return listShapeByte.Count; } set { } }
 
-        public ListShape()
+        protected ListShape()
         {
             listShapeByte = new List<byte[]>();
             bitmapCancel = new List<bool>();
             listInfoAboutStructure = new List<InfoAboutStructute>();
         }
+
+        public static ListShape getInstance()
+        {
+            if (instance == null)
+                instance = new ListShape();
+            return instance;
+        }
+
 
         public void UpDateBitmap(int resultFrame, int pictureDrawingWidth, int pictureDrawingHeight )
         {
