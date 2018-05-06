@@ -15,9 +15,11 @@ namespace GraphEditor
             this.drawSurface = drawSurface;
         }
 
-        public void CreateFrame(Point start, Point end)
+        public void CreateFrame(int startX, int startY, int endX, int endY)
         {
-            Pen pen = new Pen(Color.Brown, 15);
+            Pen pen = new Pen(Color.Brown, 2);
+            Point start = new Point(startX, startY);
+            Point end = new Point(endX, endY);
             Draw(start, end, pen);
         }
 

@@ -307,6 +307,17 @@ namespace GraphEditor
         {
             if (frame.IsExistFrame) {
                 frame.DeleteFrame(listShape, pictureDrawing.Width, pictureDrawing.Height);
+
+                Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                Graphics tempGr = Graphics.FromImage(bitmap);
+                tempGr.Clear(Color.White);
+
+                listShape.WriteOnImage(tempGr);
+                btmFront.Dispose();
+                btmFront = new Bitmap(bitmap, pictureDrawing.Width, pictureDrawing.Height);
+                grFront = Graphics.FromImage(btmFront);
+                pictureDrawing.BackgroundImage = btmFront;
+                pictureDrawing.Image = btmFront;
             }
         }
 

@@ -23,18 +23,21 @@ namespace GraphEditor
                 nameWorkFile = Path.GetFullPath(opendialog.FileName);
                 if (!String.Equals(opendialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort)
                 {
+                    ListShape tmpListShape;
                     DataContractJsonSerializer jsonFormatter = new DataContractJsonSerializer(listShape.GetType());
                     using (FileStream fs = new FileStream(nameWorkFile, FileMode.OpenOrCreate))
                     {
                         listShape.Remove();
-                        listShape = jsonFormatter.ReadObject(fs) as ListShape;
+
+                        tmpListShape = new ListShape();
+                        tmpListShape = jsonFormatter.ReadObject(fs) as ListShape;
                         fs.Close();
                     }
                     Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
                     Graphics tempGr = Graphics.FromImage(bitmap);
                     tempGr.Clear(Color.White);
 
-                    listShape.WriteOnImage(tempGr);
+                    tmpListShape.WriteOnImage(tempGr);
 
                     btmFront.Dispose();
                     btmFront = new Bitmap(bitmap, pictureDrawing.Width, pictureDrawing.Height);

@@ -18,6 +18,7 @@ namespace GraphEditor
             Point endCoords = new Point(bpSelectable.Location.X + bpSelectable.Image.Width, 
                 bpSelectable.Location.Y + bpSelectable.Image.Height);
             listShape.listInfoAboutStructure[resultFrame].ChangeValue(bpSelectable.Location, endCoords);
+
             listShape.bitmapCancel[resultFrame] = true;
             listShape.UpDateBitmap(resultFrame, pictureDrawingWidth, pictureDrawingHeight);
             bpSelectable.Dispose();
@@ -36,24 +37,45 @@ namespace GraphEditor
             }
             bpSelectable = new PictureBox();
             isDown = false;
-            bpSelectable.Location = new Point(listShape.listInfoAboutStructure[resultFrame].start.X - 15,
-                listShape.listInfoAboutStructure[resultFrame].start.Y - 15);
+
+            bpSelectable.Location = new Point(listShape.listInfoAboutStructure[resultFrame].start.X - 5,
+                listShape.listInfoAboutStructure[resultFrame].start.Y - 5);
             bpSelectable.Name = "bpSelectable";
 
-            bpSelectable.Size = new Size(listShape.listInfoAboutStructure[resultFrame].end.X - listShape.listInfoAboutStructure[resultFrame].start.X + 15,
-              listShape.listInfoAboutStructure[resultFrame].end.Y - listShape.listInfoAboutStructure[resultFrame].start.Y + 15);
-            bpSelectable.Image = new Bitmap(listShape.listInfoAboutStructure[resultFrame].end.X - listShape.listInfoAboutStructure[resultFrame].start.X + 15,
-              listShape.listInfoAboutStructure[resultFrame].end.Y - listShape.listInfoAboutStructure[resultFrame].start.Y + 15);
+            bpSelectable.Size = new Size(listShape.listInfoAboutStructure[resultFrame].end.X - listShape.listInfoAboutStructure[resultFrame].start.X + 10,
+              listShape.listInfoAboutStructure[resultFrame].end.Y - listShape.listInfoAboutStructure[resultFrame].start.Y + 10);
+            bpSelectable.Image = new Bitmap(listShape.listInfoAboutStructure[resultFrame].end.X - listShape.listInfoAboutStructure[resultFrame].start.X + 10,
+              listShape.listInfoAboutStructure[resultFrame].end.Y - listShape.listInfoAboutStructure[resultFrame].start.Y + 10);
 
             bpSelectable.Parent = pictureDrawing;
             bpSelectable.BackColor = Color.Transparent;
-            bpSelectable.BorderStyle = BorderStyle.Fixed3D;
+            bpSelectable.BorderStyle = BorderStyle.FixedSingle;
         
             Graphics qw = Graphics.FromImage(bpSelectable.Image);
-
-            Rectangle rectangle = new Rectangle(qw);
-            rectangle.CreateFrame(listShape.listInfoAboutStructure[resultFrame].start, listShape.listInfoAboutStructure[resultFrame].end);
-
+            switch (listShape.listInfoAboutStructure[resultFrame].tools)
+            {
+                case TTools.RECTANGLE:
+                    Rectangle rectangle = new Rectangle(qw);
+                    rectangle.CreateFrame(listShape.listInfoAboutStructure[resultFrame].start.X - bpSelectable.Location.X,
+                        listShape.listInfoAboutStructure[resultFrame].start.Y - bpSelectable.Location.Y,
+                        listShape.listInfoAboutStructure[resultFrame].end.X - bpSelectable.Location.X,
+                         listShape.listInfoAboutStructure[resultFrame].end.Y - bpSelectable.Location.Y);
+                    break;
+                case TTools.ELLIPSE:
+                    Ellipse ellipse = new Ellipse(qw);
+                    ellipse.CreateFrame(listShape.listInfoAboutStructure[resultFrame].start.X - bpSelectable.Location.X,
+                        listShape.listInfoAboutStructure[resultFrame].start.Y - bpSelectable.Location.Y,
+                        listShape.listInfoAboutStructure[resultFrame].end.X - bpSelectable.Location.X,
+                         listShape.listInfoAboutStructure[resultFrame].end.Y - bpSelectable.Location.Y);
+                    break;
+                case TTools.TREANGLE:
+                    Triangle triangle = new Triangle(qw);
+                    triangle.CreateFrame(listShape.listInfoAboutStructure[resultFrame].start.X - bpSelectable.Location.X,
+                        listShape.listInfoAboutStructure[resultFrame].start.Y - bpSelectable.Location.Y,
+                        listShape.listInfoAboutStructure[resultFrame].end.X - bpSelectable.Location.X,
+                         listShape.listInfoAboutStructure[resultFrame].end.Y - bpSelectable.Location.Y);
+                    break;
+            }
             listShape.bitmapCancel[resultFrame] = false;
             this.AddMethodToPictureDrawing();
         }
@@ -100,16 +122,15 @@ namespace GraphEditor
                 var startY = listShape.listInfoAboutStructure[i].start.Y;
                 Bitmap bitmap = listShape.ByteToImage(temp);
 
-                for (int y = 0; y < currHeigth; y++)
+                for (int y = -5; y < currHeigth + 5; y++)
                 {
-                    for (int x = 0; x < currWidth; x++)
+                    for (int x = -5; x < currWidth + 5; x++)
                     {
-                        Bitmap tempBitmap;
-                         if ( listShape.listInfoAboutStructure[i].start.X + x == currPoint.X && listShape.listInfoAboutStructure[i].start.Y + y == currPoint.Y &&
-                             bitmap.GetPixel(x + startX, startY + y).Name != "0" &&
-                             bitmap.GetPixel(x + startX, startY + y) != Color.Transparent
-                             && bitmap.GetPixel(x + startX, y + startY) != Color.White && 
-                             bitmap.GetPixel(x + startX, y + startY) != Color.Brown)
+                        if ( listShape.listInfoAboutStructure[i].start.X + x == currPoint.X && listShape.listInfoAboutStructure[i].start.Y + y == currPoint.Y &&
+                             bitmap.GetPixel(currPoint.X, currPoint.Y).Name != "0" &&
+                             bitmap.GetPixel(currPoint.X, currPoint.Y) != Color.Transparent
+                             && bitmap.GetPixel(currPoint.X, currPoint.Y) != Color.White && 
+                             bitmap.GetPixel(currPoint.X, currPoint.Y) != Color.Brown)
                          {
                             MessageBox.Show("dsdf", "sa", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             switch (listShape.listInfoAboutStructure[i].tools)
@@ -117,9 +138,6 @@ namespace GraphEditor
                                  case TTools.ELLIPSE:
                                      return i;
                                  case TTools.RECTANGLE:
-                                     //Rectangle rectangle = new Rectangle();
-                                     //tempBitmap = rectangle.CreateFrame(bitmap.Width, bitmap.Height, listShape.listInfoAboutStructure[i].start, listShape.listInfoAboutStructure[i].end);
-                                    // listShape.listShapeByte[i] = listShape.ImageToByte(tempBitmap);
                                      return i;
                                  case TTools.TREANGLE:
                                      return i;

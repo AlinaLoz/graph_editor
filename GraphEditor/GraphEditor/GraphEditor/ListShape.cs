@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace GraphEditor
 {
-     struct InfoAboutStructute
+     class InfoAboutStructute
      {
         public Point start, end;
         public TTools tools;
@@ -88,7 +88,11 @@ namespace GraphEditor
         public void Remove()
         {
             while (listShapeByte.Count != 0)
+            {
+                listInfoAboutStructure.RemoveAt(0);
                 listShapeByte.RemoveAt(0);
+                bitmapCancel.RemoveAt(0);
+            }
         }
 
         public Bitmap ByteToImage(byte[] arr)
@@ -122,7 +126,7 @@ namespace GraphEditor
             foreach (byte[] temp in listShapeByte)
             {
                 // MessageBox.Show(bitmapCancel.IndexOf(i).ToString(), "sdas");
-                if (bitmapCancel[i])  
+                if (listShapeByte.Count != 0 && bitmapCancel == null ||  bitmapCancel[i])  
                     tempGr.DrawImage(ByteToImage(temp), 0, 0);
                 i++;
             } 
