@@ -41,6 +41,7 @@
             this.yellowColor = new System.Windows.Forms.PictureBox();
             this.defaultColor = new System.Windows.Forms.PictureBox();
             this.panelTools = new System.Windows.Forms.Panel();
+            this.toolFrame = new System.Windows.Forms.PictureBox();
             this.toolDelete = new System.Windows.Forms.PictureBox();
             this.toolRubber = new System.Windows.Forms.PictureBox();
             this.toolTreangle = new System.Windows.Forms.PictureBox();
@@ -68,6 +69,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.yellowColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.defaultColor)).BeginInit();
             this.panelTools.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.toolFrame)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolDelete)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolRubber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolTreangle)).BeginInit();
@@ -213,6 +215,7 @@
             // 
             this.panelTools.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panelTools.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panelTools.Controls.Add(this.toolFrame);
             this.panelTools.Controls.Add(this.toolDelete);
             this.panelTools.Controls.Add(this.toolRubber);
             this.panelTools.Controls.Add(this.toolTreangle);
@@ -225,6 +228,18 @@
             this.panelTools.Name = "panelTools";
             this.panelTools.Size = new System.Drawing.Size(83, 301);
             this.panelTools.TabIndex = 6;
+            // 
+            // toolFrame
+            // 
+            this.toolFrame.BackColor = System.Drawing.Color.Transparent;
+            this.toolFrame.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("toolFrame.BackgroundImage")));
+            this.toolFrame.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.toolFrame.Location = new System.Drawing.Point(6, 170);
+            this.toolFrame.Name = "toolFrame";
+            this.toolFrame.Size = new System.Drawing.Size(30, 34);
+            this.toolFrame.TabIndex = 20;
+            this.toolFrame.TabStop = false;
+            this.toolFrame.Click += new System.EventHandler(this.toolFrame_Click);
             // 
             // toolDelete
             // 
@@ -331,6 +346,7 @@
             this.pictureDrawing.Size = new System.Drawing.Size(527, 301);
             this.pictureDrawing.TabIndex = 7;
             this.pictureDrawing.TabStop = false;
+            this.pictureDrawing.Click += new System.EventHandler(this.pictureDrawing_Click);
             this.pictureDrawing.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureDrawing_MouseDown);
             this.pictureDrawing.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureDrawing_MouseMove);
             this.pictureDrawing.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureDrawing_MouseUp);
@@ -395,7 +411,7 @@
             this.Controls.Add(this.panelTools);
             this.Controls.Add(this.panelColor);
             this.Controls.Add(this.menuStrip1);
-            this.Cursor = System.Windows.Forms.Cursors.Cross;
+            this.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(628, 441);
@@ -415,6 +431,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.yellowColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.defaultColor)).EndInit();
             this.panelTools.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.toolFrame)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolDelete)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolRubber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.toolTreangle)).EndInit();
@@ -460,6 +477,7 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.PictureBox toolFrame;
     }
 }
 

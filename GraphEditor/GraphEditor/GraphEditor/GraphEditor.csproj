@@ -54,6 +54,8 @@
     <Compile Include="form.Designer.cs">
       <DependentUpon>form.cs</DependentUpon>
     </Compile>
+    <Compile Include="Frame.cs" />
+    <Compile Include="ISelectable.cs" />
     <Compile Include="IWorkFile.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="ListShape.cs" />

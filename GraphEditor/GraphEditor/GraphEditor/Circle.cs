@@ -13,6 +13,7 @@ namespace GraphEditor
         private float prevSize;
         private float currSize;
 
+         
         public Circle(Graphics drawSurface)
         {
             this.drawSurface = drawSurface;
@@ -46,5 +47,6 @@ namespace GraphEditor
             else if (endCoords.X < startCoords.X && endCoords.Y < startCoords.Y)
                 drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, -sizeCircle);
         }
+
     }
 }

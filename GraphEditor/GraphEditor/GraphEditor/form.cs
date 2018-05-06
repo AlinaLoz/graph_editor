@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace GraphEditor
 {
+    enum TTools { PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER, FRAME };
+
     public partial class Paint : Form
     {
-        enum TTools { PEN, RECTANGLE, TREANGLE, CIRCLE, ELLIPSE, LINE, RUBBER };
         Keys prevKey, currKey;
 
         Point startCoords = new Point(0, 0);
@@ -20,6 +20,7 @@ namespace GraphEditor
 
         Pen penReader = new Pen(Color.Black);
         Pen rubberPen = new Pen(Color.White, 20);
+        Frame frame = new Frame();
         TTools currTool = TTools.PEN;
         Boolean isMouseClick;
         String nameWorkFile;
@@ -210,19 +211,38 @@ namespace GraphEditor
 
         private void pictureDrawing_MouseUp(object sender, MouseEventArgs e)
         {
-            isMouseClick = false;
 
+            isMouseClick = false;
             penReader.Width = 1;
             penReader.Color = defaultColor.BackColor;
-
             Bitmap bm = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
             Graphics g = Graphics.FromImage(bm);
-
             drawSurface = g;
             ToolDraw();
             grFront.DrawImage(bm, 0, 0);
-            listShape.AddShape(bm);
-            listShape.bitmapCancel.Add(true);
+
+            if (currTool != TTools.FRAME)
+            {
+                listShape.AddShape(bm);
+                listShape.bitmapCancel.Add(true);
+                listShape.AddInfoAboutShape(startCoords, endCoords, currTool);
+            }
+            
+            if (currTool == TTools.FRAME)
+            {
+                Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                Graphics tempGr = Graphics.FromImage(bitmap);
+                tempGr.Clear(Color.White);
+
+                frame.CreateFrame(listShape, startCoords, pictureDrawing);
+
+                listShape.WriteOnImage(tempGr);
+                btmFront.Dispose();
+                btmFront = new Bitmap(bitmap, pictureDrawing.Width, pictureDrawing.Height);
+                grFront = Graphics.FromImage(btmFront);
+                pictureDrawing.BackgroundImage = btmFront;
+                pictureDrawing.Image = btmFront;
+            }
         }
 
         private void toolDelete_MouseUp(object sender, MouseEventArgs e)
@@ -276,6 +296,18 @@ namespace GraphEditor
             toolDelete_Click(sender, e);
             toolDelete_MouseUp(sender, e);
             nameWorkFile = "";
+        }
+
+        private void toolFrame_Click(object sender, EventArgs e)
+        {
+            currTool = TTools.FRAME;
+        }
+
+        private void pictureDrawing_Click(object sender, EventArgs e)
+        {
+            if (frame.IsExistFrame) {
+                frame.DeleteFrame(listShape, pictureDrawing.Width, pictureDrawing.Height);
+            }
         }
 
         private void Paint_KeyDown(object sender, KeyEventArgs e)

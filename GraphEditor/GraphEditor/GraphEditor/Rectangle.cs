@@ -1,19 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace GraphEditor
 {
-    class Rectangle: Shape
+    class Rectangle : Shape, ISelectable
     {
-        private Graphics drawSurface;
+        Graphics drawSurface;
 
-        public Rectangle(Graphics drawSurface) {
+        public Rectangle()
+        {
+        }
+
+        public Rectangle(Graphics drawSurface)
+        {
             this.drawSurface = drawSurface;
         }
+
+        public void CreateFrame(Point start, Point end)
+        {
+            Pen pen = new Pen(Color.Brown, 15);
+            Draw(start, end, pen);
+        }
+
         public override void Draw(Point startCoords, Point endCoords, Pen penReader)
         {
             drawSurface.DrawRectangle(penReader, GetX(startCoords, endCoords), GetY(startCoords, endCoords), GetWidthShape(startCoords, endCoords), GetHightShape(startCoords, endCoords));

@@ -36,7 +36,7 @@ namespace GraphEditor
             DialogResult dialogResult = savedialog.ShowDialog();
             nameWorkFile = Path.GetFullPath(savedialog.FileName);
             MessageBox.Show(nameWorkFile, "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            if (!String.Equals(savedialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort) ;
+            if (!String.Equals(savedialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort) 
                 save(listShape,  nameWorkFile);
         }
 
