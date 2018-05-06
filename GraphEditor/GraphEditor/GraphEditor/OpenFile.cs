@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Json;
 
 namespace GraphEditor
 {
-    class OpenFile : IWorkFile
+    class OpenFile : Product_File
     {
         private OpenFileDialog opendialog;
 
@@ -15,7 +15,7 @@ namespace GraphEditor
             opendialog = new OpenFileDialog();
         }
 
-        public void workWithFile(ListShape listShape, PictureBox pictureDrawing, ref Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile)
+        public override void workWithFile(ListShape listShape, PictureBox pictureDrawing, ref Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace GraphEditor
 
         }
 
-        public void initTool(string title, bool CheckPathExists) {
+        public override void initTool(string title, bool CheckPathExists) {
             opendialog.DefaultExt = "json";
             opendialog.Title = title;
             opendialog.CheckPathExists = CheckPathExists;

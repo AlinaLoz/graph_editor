@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace GraphEditor
 {
-    class SaveFile:IWorkFile
+    class SaveFile: Product_File
     {
         private SaveFileDialog savedialog;
         DataContractJsonSerializer jsonFormatter;
@@ -32,7 +32,7 @@ namespace GraphEditor
             }
         }
 
-        public void workWithFile(ListShape listShape, PictureBox pictureDrawing, ref Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile) {
+        public override void workWithFile(ListShape listShape, PictureBox pictureDrawing, ref Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile) {
             DialogResult dialogResult = savedialog.ShowDialog();
             nameWorkFile = Path.GetFullPath(savedialog.FileName);
             MessageBox.Show(nameWorkFile, "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -40,7 +40,7 @@ namespace GraphEditor
                 save(listShape,  nameWorkFile);
         }
 
-        public void initTool(string title, bool CheckPathExists)
+        public override void initTool(string title, bool CheckPathExists)
         {
             savedialog.DefaultExt = "json";
             savedialog.Title = title;

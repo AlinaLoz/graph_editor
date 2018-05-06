@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace GraphEditor
 {
-    class Triangle:Shape, ISelectable
+    class Triangle: Shape, ISelectable
     {
         private Graphics drawSurface;
 

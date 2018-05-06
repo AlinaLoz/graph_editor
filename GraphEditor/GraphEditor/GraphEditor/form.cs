@@ -276,14 +276,16 @@ namespace GraphEditor
 
         private void saveAsКакToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFile saveFile = new SaveFile();
+            Creator_File creator = new CreateProductSaveFile() ;
+            Product_File saveFile = creator.FactoryMethod();
             saveFile.initTool("Сохранить картинку как...", true);
             saveFile.workWithFile(listShape, pictureDrawing, ref btmFront, ref grFront, ref nameWorkFile);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFile openFile = new OpenFile();
+            Creator_File creator = new CreateProductOpenFile();
+            Product_File openFile = creator.FactoryMethod();
             openFile.initTool("Открыть картинку", true);
             openFile.workWithFile(listShape, pictureDrawing, ref btmFront, ref grFront, ref nameWorkFile);
         }
