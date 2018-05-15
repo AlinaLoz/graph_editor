@@ -4,6 +4,6 @@ namespace GraphEditor
 {
     interface ISelectable
     {
-        void CreateFrame(int startX, int startY, int endX, int endY);
+        bool isHighLight(Point currPoint);
     }
 }

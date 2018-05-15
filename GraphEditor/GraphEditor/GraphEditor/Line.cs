@@ -9,16 +9,11 @@ namespace GraphEditor
 {
     class Line:Shape
     {
-        private Graphics drawSurface;
-
-        public Line(Graphics drawSurface)
+        public override void Draw(Graphics drawSurface)
         {
-            this.drawSurface = drawSurface;
+            Pen pen = new Pen(Color.Black, 5);
+            drawSurface.DrawLine(pen, firstPoint, lastPoint);
         }
-
-        public override void Draw(Point startCoords, Point endCoords, Pen penReader)
-        {
-            drawSurface.DrawLine(penReader, startCoords, endCoords);
-        }
+        
     }
 }

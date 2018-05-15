@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -6,78 +7,65 @@ namespace GraphEditor
 {
     class Frame
     {
+        private static Frame instance;
         private PictureBox bpSelectable;
         private bool isDown;
         private Point locat;
-        int resultFrame;
+        private int numberFigure;
 
-        public bool IsExistFrame { get{ return (bpSelectable == null) ? false : true; } }
+        public static Frame getInstance()
+        {
+            if (instance == null)
+                instance = new Frame();
+            return instance;
+        }
 
-        public void DeleteFrame(ListShape listShape, int pictureDrawingWidth, int pictureDrawingHeight)
+        public bool IsExistFrame { get { return (bpSelectable == null) ? false : true; } }
+
+        public void DeleteFrame(List<Shape> shapesList, int pictureDrawingWidth, int pictureDrawingHeight)
         {
             Point endCoords = new Point(bpSelectable.Location.X + bpSelectable.Image.Width, 
                 bpSelectable.Location.Y + bpSelectable.Image.Height);
-            listShape.listInfoAboutStructure[resultFrame].ChangeValue(bpSelectable.Location, endCoords);
 
-            listShape.bitmapCancel[resultFrame] = true;
-            listShape.UpDateBitmap(resultFrame, pictureDrawingWidth, pictureDrawingHeight);
+            shapesList[numberFigure].firstPoint = bpSelectable.Location;
+            shapesList[numberFigure].lastPoint = endCoords;
+
+            shapesList[numberFigure].bitmapCancel = true;
+            shapesList[numberFigure].changeLocation(pictureDrawingWidth, pictureDrawingHeight);
+
             bpSelectable.Dispose();
             bpSelectable = null;
             isDown = false;
         }
 
-        public void CreateFrame(ListShape listShape, Point currPoint, PictureBox pictureDrawing)
+        public bool CreateFrame(List<Shape> listShape, Point currPoint, PictureBox pictureDrawing)
         {
-            if ((resultFrame = SortFigure(listShape, currPoint)) == -1)
+            foreach (Shape shape in listShape)
             {
-                return;
-            }
-            if (bpSelectable != null) {
-                return;
-            }
-            bpSelectable = new PictureBox();
-            isDown = false;
+                if (shape is ISelectable && ((ISelectable)shape).isHighLight(currPoint))
+                {
+                    this.numberFigure = listShape.IndexOf(shape);
+                    shape.bitmapCancel = false;
 
-            bpSelectable.Location = new Point(listShape.listInfoAboutStructure[resultFrame].start.X - 5,
-                listShape.listInfoAboutStructure[resultFrame].start.Y - 5);
-            bpSelectable.Name = "bpSelectable";
-
-            bpSelectable.Size = new Size(listShape.listInfoAboutStructure[resultFrame].end.X - listShape.listInfoAboutStructure[resultFrame].start.X + 10,
-              listShape.listInfoAboutStructure[resultFrame].end.Y - listShape.listInfoAboutStructure[resultFrame].start.Y + 10);
-            bpSelectable.Image = new Bitmap(listShape.listInfoAboutStructure[resultFrame].end.X - listShape.listInfoAboutStructure[resultFrame].start.X + 10,
-              listShape.listInfoAboutStructure[resultFrame].end.Y - listShape.listInfoAboutStructure[resultFrame].start.Y + 10);
-
-            bpSelectable.Parent = pictureDrawing;
-            bpSelectable.BackColor = Color.Transparent;
-            bpSelectable.BorderStyle = BorderStyle.FixedSingle;
-        
-            Graphics qw = Graphics.FromImage(bpSelectable.Image);
-            switch (listShape.listInfoAboutStructure[resultFrame].tools)
-            {
-                case TTools.RECTANGLE:
-                    Rectangle rectangle = new Rectangle(qw);
-                    rectangle.CreateFrame(listShape.listInfoAboutStructure[resultFrame].start.X - bpSelectable.Location.X,
-                        listShape.listInfoAboutStructure[resultFrame].start.Y - bpSelectable.Location.Y,
-                        listShape.listInfoAboutStructure[resultFrame].end.X - bpSelectable.Location.X,
-                         listShape.listInfoAboutStructure[resultFrame].end.Y - bpSelectable.Location.Y);
-                    break;
-                case TTools.ELLIPSE:
-                    Ellipse ellipse = new Ellipse(qw);
-                    ellipse.CreateFrame(listShape.listInfoAboutStructure[resultFrame].start.X - bpSelectable.Location.X,
-                        listShape.listInfoAboutStructure[resultFrame].start.Y - bpSelectable.Location.Y,
-                        listShape.listInfoAboutStructure[resultFrame].end.X - bpSelectable.Location.X,
-                         listShape.listInfoAboutStructure[resultFrame].end.Y - bpSelectable.Location.Y);
-                    break;
-                case TTools.TREANGLE:
-                    Triangle triangle = new Triangle(qw);
-                    triangle.CreateFrame(listShape.listInfoAboutStructure[resultFrame].start.X - bpSelectable.Location.X,
-                        listShape.listInfoAboutStructure[resultFrame].start.Y - bpSelectable.Location.Y,
-                        listShape.listInfoAboutStructure[resultFrame].end.X - bpSelectable.Location.X,
-                         listShape.listInfoAboutStructure[resultFrame].end.Y - bpSelectable.Location.Y);
-                    break;
+                    bpSelectable = new PictureBox();
+                    bpSelectable.Name = "bpSelectable";
+                    bpSelectable.Parent = pictureDrawing;
+                    bpSelectable.BackColor = Color.Transparent;
+                    bpSelectable.BorderStyle = BorderStyle.FixedSingle;
+                    bpSelectable.Location = new Point(shape.firstPoint.X, shape.firstPoint.Y);
+                    bpSelectable.Size = new Size(Math.Abs(shape.lastPoint.X - shape.firstPoint.X), Math.Abs(shape.lastPoint.Y - shape.firstPoint.Y));
+                    bpSelectable.Image = new Bitmap(Math.Abs(shape.lastPoint.X - shape.firstPoint.X), Math.Abs(shape.lastPoint.Y - shape.firstPoint.Y));
+                    Graphics qw = Graphics.FromImage(bpSelectable.Image);
+                    shape.firstPoint.X -= bpSelectable.Location.X;
+                    shape.firstPoint.Y -= bpSelectable.Location.Y;
+                    shape.lastPoint.X -= bpSelectable.Location.X;
+                    shape.lastPoint.Y -= bpSelectable.Location.Y;
+                    shape.Draw(qw);
+                    this.AddMethodToPictureDrawing();
+                    return true;
+                }
             }
-            listShape.bitmapCancel[resultFrame] = false;
-            this.AddMethodToPictureDrawing();
+            return false;
         }
 
         private void AddMethodToPictureDrawing() {
@@ -106,48 +94,6 @@ namespace GraphEditor
             {
                 bpSelectable.Location = new Point(x + (e.X - locat.X),  y + (e.Y - locat.Y));
             }
-        }
-
-        private int SortFigure(ListShape listShape, Point currPoint)
-        {
-            int i = 0;
-            foreach (byte[] temp in listShape.listShapeByte)
-            {
-                if (listShape.listInfoAboutStructure[i].tools == TTools.PEN || listShape.listInfoAboutStructure[i].tools == TTools.CIRCLE) {
-                    return -1;      
-                }
-                var currWidth = listShape.listInfoAboutStructure[i].end.X - listShape.listInfoAboutStructure[i].start.X;
-                var currHeigth = listShape.listInfoAboutStructure[i].end.Y - listShape.listInfoAboutStructure[i].start.Y;
-                var startX = listShape.listInfoAboutStructure[i].start.X;
-                var startY = listShape.listInfoAboutStructure[i].start.Y;
-                Bitmap bitmap = listShape.ByteToImage(temp);
-
-                for (int y = -5; y < currHeigth + 5; y++)
-                {
-                    for (int x = -5; x < currWidth + 5; x++)
-                    {
-                        if ( listShape.listInfoAboutStructure[i].start.X + x == currPoint.X && listShape.listInfoAboutStructure[i].start.Y + y == currPoint.Y &&
-                             bitmap.GetPixel(currPoint.X, currPoint.Y).Name != "0" &&
-                             bitmap.GetPixel(currPoint.X, currPoint.Y) != Color.Transparent
-                             && bitmap.GetPixel(currPoint.X, currPoint.Y) != Color.White && 
-                             bitmap.GetPixel(currPoint.X, currPoint.Y) != Color.Brown)
-                         {
-                            MessageBox.Show("dsdf", "sa", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            switch (listShape.listInfoAboutStructure[i].tools)
-                            {
-                                 case TTools.ELLIPSE:
-                                     return i;
-                                 case TTools.RECTANGLE:
-                                     return i;
-                                 case TTools.TREANGLE:
-                                     return i;
-                            }
-                        }
-                    }  
-                }
-                i++;
-            }
-            return -1;
         }
     }
 }

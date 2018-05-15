@@ -1,51 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace GraphEditor
 {
-    class Circle:Shape
+    [DataContract]
+    class Circle:Shape, ISelectable
     {
-        private Graphics drawSurface;
-        private float prevSize;
-        private float currSize;
-
-         
-        public Circle(Graphics drawSurface)
+        public Circle()
         {
-            this.drawSurface = drawSurface;
-            currSize = 0;
-            prevSize = 0;
         }
 
-        public void getSize(float inputSize)
+        public bool isHighLight(Point currPoint)
         {
-            prevSize = inputSize;
+            int radius = (int)GetSizeShape(lastPoint, firstPoint) / 2;
+            int dx = Math.Abs(currPoint.X - (firstPoint.X + radius));
+            int dy = Math.Abs(currPoint.Y - (firstPoint.Y + radius));
+            return (Math.Pow(dx, 2) + Math.Pow(dy, 2) < Math.Pow(radius, 2)) ? true : false;
         }
 
-        public float returnSize() {
-            return currSize;
-        }
-
-        public override void Draw(Point startCoords, Point endCoords, Pen penReader)
+    public override void Draw(Graphics drawSurface)
         {
-            currSize = GetSizeShape(startCoords, endCoords);
-             MyDrawingEllipse(endCoords, startCoords, penReader, drawSurface, currSize);
-        }
+            Pen pen = new Pen(Color.Black, 1);
 
-        public static void MyDrawingEllipse(Point endCoords, Point startCoords, Pen penReader, Graphics drawSurface, float sizeCircle)
-        {
-            if (endCoords.X > startCoords.X && endCoords.Y > startCoords.Y)
-                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, sizeCircle);
-            else if (endCoords.X > startCoords.X && endCoords.Y < startCoords.Y)
-                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, sizeCircle, -sizeCircle);
-            else if (endCoords.X < startCoords.X && endCoords.Y > startCoords.Y)
-                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, sizeCircle);
-            else if (endCoords.X < startCoords.X && endCoords.Y < startCoords.Y)
-                drawSurface.DrawEllipse(penReader, startCoords.X, startCoords.Y, -sizeCircle, -sizeCircle);
+            if (this.lastPoint.X > firstPoint.X && lastPoint.Y > firstPoint.Y)
+                drawSurface.DrawEllipse(pen, firstPoint.X, firstPoint.Y, GetSizeShape(lastPoint, firstPoint), GetSizeShape(lastPoint, firstPoint));
+            else
+                if (lastPoint.X > firstPoint.X && lastPoint.Y < firstPoint.Y)
+                drawSurface.DrawEllipse(pen, firstPoint.X, firstPoint.Y, GetSizeShape(lastPoint, firstPoint), -GetSizeShape(lastPoint, firstPoint));
+            else
+                    if (lastPoint.X < firstPoint.X && lastPoint.Y > firstPoint.Y)
+                drawSurface.DrawEllipse(pen, firstPoint.X, firstPoint.Y, -GetSizeShape(lastPoint, firstPoint), GetSizeShape(lastPoint, firstPoint));
+            else
+                        if (lastPoint.X < firstPoint.X && lastPoint.Y < firstPoint.Y)
+                drawSurface.DrawEllipse(pen, firstPoint.X, firstPoint.Y, -GetSizeShape(lastPoint, firstPoint), -GetSizeShape(lastPoint, firstPoint));
         }
 
     }

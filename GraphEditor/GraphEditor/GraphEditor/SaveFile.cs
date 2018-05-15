@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace GraphEditor
 {
@@ -15,29 +16,31 @@ namespace GraphEditor
             savedialog = new SaveFileDialog();
         }
 
-        public void save(ListShape listShape, string nameWorkFile) {
+        public void save(List<Shape> shapesList, string nameWorkFile) {
             try
             {
-                jsonFormatter = new DataContractJsonSerializer(typeof(ListShape));
+                Type[] knownTypes = new[] { typeof(Circle), typeof(Rectangle), typeof(Line),
+                    typeof(Ellipse) };
+                jsonFormatter = new DataContractJsonSerializer(typeof(List<Shape>), knownTypes);
                 using (FileStream fs = new FileStream(nameWorkFile, FileMode.Create))
                 {
-                    jsonFormatter.WriteObject(fs, listShape);
+                    jsonFormatter.WriteObject(fs, shapesList);
                     fs.Close();
                 }
                 MessageBox.Show("File save", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (Exception ex)
+             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        public override void workWithFile(ListShape listShape, PictureBox pictureDrawing, ref Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile) {
+        public override void workWithFile(List<Shape> shapesList, ref DisplayManager displayManage, ref string nameWorkFile) {
             DialogResult dialogResult = savedialog.ShowDialog();
             nameWorkFile = Path.GetFullPath(savedialog.FileName);
             MessageBox.Show(nameWorkFile, "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
             if (!String.Equals(savedialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort) 
-                save(listShape,  nameWorkFile);
+                save(shapesList,  nameWorkFile);
         }
 
         public override void initTool(string title, bool CheckPathExists)

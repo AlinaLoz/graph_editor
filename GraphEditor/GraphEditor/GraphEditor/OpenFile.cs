@@ -3,6 +3,7 @@ using System.Drawing;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Json;
+using System.Collections.Generic;
 
 namespace GraphEditor
 {
@@ -15,7 +16,20 @@ namespace GraphEditor
             opendialog = new OpenFileDialog();
         }
 
-        public override void workWithFile(ListShape listShape, PictureBox pictureDrawing, ref Bitmap btmFront, ref Graphics grFront, ref string nameWorkFile)
+        public static void WriteOnImage(Graphics tempGr, List<Shape> shapesList)
+        {
+            byte[] temp;
+            foreach (Shape shape in shapesList)
+            {
+                if (shape.bitmapCancel)
+                {
+                    temp = shape.byteBmp;
+                    tempGr.DrawImage(shape.ByteToImage(temp), 0, 0);
+                } 
+            }
+        }
+
+        public override void workWithFile(List<Shape> shapesList, ref DisplayManager displayManager, ref string nameWorkFile)
         {
             try
             {
@@ -23,30 +37,29 @@ namespace GraphEditor
                 nameWorkFile = Path.GetFullPath(opendialog.FileName);
                 if (!String.Equals(opendialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort)
                 {
-                    DataContractJsonSerializer jsonFormatter = new DataContractJsonSerializer(listShape.GetType());
+                    Type[] knownTypes = new[] { typeof(Circle), typeof(Rectangle), typeof(Line),
+                    typeof(Ellipse) };
+                    DataContractJsonSerializer jsonFormatter = new DataContractJsonSerializer(shapesList.GetType(), knownTypes);
                     using (FileStream fs = new FileStream(nameWorkFile, FileMode.OpenOrCreate))
                     {
-                        listShape.Remove();
-                        listShape = jsonFormatter.ReadObject(fs) as ListShape;
+                        shapesList.Clear();
+                        shapesList = jsonFormatter.ReadObject(fs) as List<Shape>;
                         fs.Close();
                     }
-                    Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                    Bitmap bitmap = new Bitmap(displayManager.pictureDrawing.Width, displayManager.pictureDrawing.Height);
                     Graphics tempGr = Graphics.FromImage(bitmap);
                     tempGr.Clear(Color.White);
 
-                    listShape.WriteOnImage(tempGr);
+                    WriteOnImage(tempGr, shapesList);
 
-                    btmFront.Dispose();
-                    btmFront = new Bitmap(bitmap, pictureDrawing.Width, pictureDrawing.Height);
-                    grFront = Graphics.FromImage(btmFront);
-
-                    pictureDrawing.BackgroundImage = btmFront;
-                    pictureDrawing.Image = btmFront;
+                    displayManager.DeleteAll();
+                    displayManager.InitComponent(bitmap);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.ToString(), "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Неправильный файл", "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+               // MessageBox.Show(ex.ToString(), "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }

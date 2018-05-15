@@ -1,32 +1,34 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace GraphEditor
 {
     class Rectangle : Shape, ISelectable
     {
-        Graphics drawSurface;
-
         public Rectangle()
         {
         }
 
-        public Rectangle(Graphics drawSurface)
+        public bool isHighLight(Point currPoint)
         {
-            this.drawSurface = drawSurface;
+            bool firstCondition = (currPoint.X >= firstPoint.X) && (currPoint.X <= lastPoint.X);
+            bool secondCondition = (currPoint.Y >= firstPoint.Y) && (currPoint.Y <= lastPoint.Y);
+            return firstCondition && secondCondition;
         }
-
-        public void CreateFrame(int startX, int startY, int endX, int endY)
+        public void CreateFrame(Graphics drawSurface)
         {
             Pen pen = new Pen(Color.Brown, 2);
-            Point start = new Point(startX, startY);
-            Point end = new Point(endX, endY);
-            Draw(start, end, pen);
+            Point start = new Point(firstPoint.X, firstPoint.Y);
+            Point end = new Point(lastPoint.X, lastPoint.Y);
+            Draw(drawSurface);
         }
 
-        public override void Draw(Point startCoords, Point endCoords, Pen penReader)
+        public override void Draw(Graphics drawSurface)
         {
-            drawSurface.DrawRectangle(penReader, GetX(startCoords, endCoords), GetY(startCoords, endCoords), GetWidthShape(startCoords, endCoords), GetHightShape(startCoords, endCoords));
+            Pen pen = new Pen(Color.Black, 1);
+            drawSurface.DrawRectangle(pen, GetX(firstPoint, lastPoint), GetY(firstPoint, lastPoint), GetWidthShape(firstPoint, lastPoint), GetHightShape(firstPoint, lastPoint));
         }
+
 
     }
 }

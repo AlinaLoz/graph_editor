@@ -50,6 +50,7 @@
     <Compile Include="CreateProductOpenFile.cs" />
     <Compile Include="CreateProductSaveFile.cs" />
     <Compile Include="Creator_File.cs" />
+    <Compile Include="DisplayManager.cs" />
     <Compile Include="Ellipse.cs" />
     <Compile Include="form.cs">
       <SubType>Form</SubType>
@@ -61,7 +62,6 @@
     <Compile Include="ISelectable.cs" />
     <Compile Include="Product_File.cs" />
     <Compile Include="Line.cs" />
-    <Compile Include="ListShape.cs" />
     <Compile Include="OpenFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
