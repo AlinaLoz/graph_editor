@@ -13,10 +13,9 @@ namespace GraphEditor
         Boolean isMouseClick;
         Frame frame;
 
-          Keys prevKey, currKey;
+        Keys prevKey, currKey;
         String nameWorkFile;
-        bool isCtrZ;
-        private bool isCtrlZ;
+        bool isCtrlZ;
 
         public Paint()
         {
@@ -27,7 +26,7 @@ namespace GraphEditor
             isMouseClick = false;
             prevKey = new Keys();
             currKey = new Keys();
-            isCtrZ = false;
+            isCtrlZ = false;
         }
        
         private void toolDelete_Click(object sender, EventArgs e)
@@ -66,13 +65,10 @@ namespace GraphEditor
                     if (frame.IsExistFrame)
                     {
                         frame.DeleteFrame(shapesList, pictureDrawing.Width, pictureDrawing.Height);
-
                         Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
                         Graphics tempGr = Graphics.FromImage(bitmap);
                         tempGr.Clear(Color.White);
-
                         OpenFile.WriteOnImage(tempGr, shapesList);
-
                         displayManager.DeleteAll();
                         displayManager.InitComponent(bitmap);
                         frame = null;
@@ -111,14 +107,24 @@ namespace GraphEditor
 
         private void pictureDrawing_MouseUp(object sender, MouseEventArgs e)
         {
-            isMouseClick = false;
-            if (frame == null && shapesList.Count > 0)
+            if (isMouseClick && frame == null && shapesList.Count > 0)
             {
-                Bitmap bm = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
-                Graphics g = Graphics.FromImage(bm);
-                shapesList.Last().Draw(g);
-                displayManager.Imposition(bm);
-                shapesList.Last().addBmp(bm);
+                isMouseClick = false;
+                shapesList.Last().setLastPoint(new Point(e.X, e.Y));
+                if (shapesList.Last().firstPoint.X == shapesList.Last().lastPoint.X
+                        && shapesList.Last().firstPoint.Y == shapesList.Last().lastPoint.Y)
+                {
+                    shapesList.RemoveAt(shapesList.Count - 1);
+                }
+                else
+                {
+                    Bitmap bm = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                    Graphics g = Graphics.FromImage(bm);
+                    shapesList.Last().Draw(g);
+                    displayManager.Imposition(bm);
+                    shapesList.Last().addBmp(bm);
+                }
+                
             }
         }
 
@@ -226,13 +232,13 @@ namespace GraphEditor
             {
                 CtrlZ();
                 isKey = true;
-                isCtrZ = true;
+                isCtrlZ = true;
             }
             if (prevKey == Keys.ControlKey && e.KeyCode == Keys.Y)
             {
                 CtrlY();
                 isKey = true;
-                isCtrZ = false;
+                isCtrlZ = false;
             }
             if (isKey)
             {
