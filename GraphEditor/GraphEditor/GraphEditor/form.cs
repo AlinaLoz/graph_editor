@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using AddSquareToCentre;
+using AddStyleToShape;
 
 namespace GraphEditor
 {
     public partial class Paint : Form
     {
+        List<PictureBox> ToolsFromPlugins = new List<PictureBox>();
+        int numberAddTools;
         List<Shape> shapesList = new List<Shape>();
+        List<Type> addinTypes = new List<Type>();
         DisplayManager displayManager;
         Boolean isMouseClick;
         Frame frame;
@@ -21,14 +29,48 @@ namespace GraphEditor
         {
             InitializeComponent();
             displayManager = DisplayManager.getInstance(pictureDrawing);
-
+            numberAddTools = -1;
             nameWorkFile = "";
             isMouseClick = false;
             prevKey = new Keys();
             currKey = new Keys();
             isCtrlZ = false;
+            string currentDir = Path.GetDirectoryName(
+               Assembly.GetEntryAssembly().Location);
+
+            string addinsDir = Path.Combine(currentDir, "MyPlugins");
+            string[] addinAssemblies = Directory.GetFiles(addinsDir, "*.dll");
+
+            foreach (string file in addinAssemblies)
+            {
+                Assembly addinAssembly = Assembly.LoadFrom(file);
+                foreach (Type t in addinAssembly.GetExportedTypes())
+                {
+                    if (t.IsClass && typeof(IAddStyleToShape).IsAssignableFrom(t))
+                        addinTypes.Add(t);
+                }
+            }
+            foreach (Type typePlugin in addinTypes)
+            {
+                ToolsFromPlugins.Add(new PictureBox());
+                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Name = "bpNewTools/" + addinTypes.IndexOf(typePlugin);
+                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Parent = panelTools;
+                ToolsFromPlugins[ToolsFromPlugins.Count - 1].BorderStyle = BorderStyle.FixedSingle;
+                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Location = (ToolsFromPlugins.Count == 1) ?
+                    new Point(toolFrame.Location.X,
+                    toolFrame.Location.Y + toolFrame.Height + 5) :
+                    new Point(ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.X,
+                    ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.Y + 5);
+                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Size = new Size(25, 25);
+                ToolsFromPlugins[ToolsFromPlugins.Count - 1].MouseDown += new MouseEventHandler(ToolsFromPlugins_MouseDown);
+            }
         }
-       
+
+        private void ToolsFromPlugins_MouseDown(object sender, MouseEventArgs e)
+        {
+            numberAddTools = Convert.ToInt32(Regex.Replace(((PictureBox)sender).Name, @"[^\d]+", ""));
+        }
+
         private void toolDelete_Click(object sender, EventArgs e)
         {
             shapesList.Clear();
@@ -48,49 +90,71 @@ namespace GraphEditor
 
         private void pictureDrawing_MouseDown(object sender, MouseEventArgs e)
         {
-            if (frame != null)
+            Point startPoint = new Point(e.X, e.Y);
+            if (numberAddTools != -1)
             {
-                Point startPoint = new Point(e.X, e.Y);
-                if (!frame.IsExistFrame && frame.CreateFrame(shapesList, startPoint, pictureDrawing))
+                foreach (Type typePlugin in addinTypes)
                 {
-                    Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
-                    Graphics tempGr = Graphics.FromImage(bitmap);
-                    tempGr.Clear(Color.White);
-                    OpenFile.WriteOnImage(tempGr, shapesList);
-                    displayManager.DeleteAll();
-                    displayManager.InitComponent(bitmap);
-                }
-                else
-                {
-                    if (frame.IsExistFrame)
+                    if (addinTypes.IndexOf(typePlugin) == numberAddTools)
                     {
-                        frame.DeleteFrame(shapesList, pictureDrawing.Width, pictureDrawing.Height);
+                        IAddStyleToShape currTool = (IAddStyleToShape)Activator.CreateInstance(typePlugin);
+                        foreach (Shape shape in shapesList)
+                        {
+                            if (shape is ISelectable && ((ISelectable)shape).isHighLight(new Point(e.X, e.Y)))
+                            {
+                                currTool.AddShapeToCentre(shape.byteBmp, shape.firstPoint, shape.lastPoint,
+                                    pictureDrawing.Width, pictureDrawing.Height);
+                                return;
+                            }
+                        }
+                        
+                    }
+                }
+                numberAddTools = -1;
+            }
+            else
+                if (frame != null)
+                {
+                    if (!frame.IsExistFrame && frame.CreateFrame(shapesList, startPoint, pictureDrawing))
+                    {
                         Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
                         Graphics tempGr = Graphics.FromImage(bitmap);
                         tempGr.Clear(Color.White);
                         OpenFile.WriteOnImage(tempGr, shapesList);
                         displayManager.DeleteAll();
                         displayManager.InitComponent(bitmap);
-                        frame = null;
                     }
                     else
                     {
-                        frame = null;
-                    }
+                        if (frame.IsExistFrame)
+                        {
+                            frame.DeleteFrame(shapesList, pictureDrawing.Width, pictureDrawing.Height);
+                            Bitmap bitmap = new Bitmap(pictureDrawing.Width, pictureDrawing.Height);
+                            Graphics tempGr = Graphics.FromImage(bitmap);
+                            tempGr.Clear(Color.White);
+                            OpenFile.WriteOnImage(tempGr, shapesList);
+                            displayManager.DeleteAll();
+                            displayManager.InitComponent(bitmap);
+                            frame = null;
+                        }
+                        else
+                        {
+                            frame = null;
+                        }
 
-                }
-            }
-            else {
-                if (shapesList.Count > 0)
-                {
-                    isMouseClick = true;
-                    if (shapesList.Last().firstPoint.X != 0)
-                    {
-                        shapesList.Add(CloneObject(shapesList.Last()));
                     }
-                    shapesList.Last().setFirstPoint(new Point(e.X, e.Y));
-                }  
-            } 
+                }
+                else {
+                    if (shapesList.Count > 0)
+                    {
+                        isMouseClick = true;
+                        if (shapesList.Last().firstPoint.X != 0)
+                        {
+                            shapesList.Add(CloneObject(shapesList.Last()));
+                        }
+                        shapesList.Last().setFirstPoint(new Point(e.X, e.Y));
+                    }  
+                } 
         }
 
         private void pictureDrawing_MouseMove(object sender, MouseEventArgs e)
