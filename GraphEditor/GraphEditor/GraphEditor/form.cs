@@ -55,6 +55,7 @@ namespace GraphEditor
                 ToolsFromPlugins.Add(new PictureBox());
                 ToolsFromPlugins[ToolsFromPlugins.Count - 1].Name = "bpNewTools/" + addinTypes.IndexOf(typePlugin);
                 ToolsFromPlugins[ToolsFromPlugins.Count - 1].Parent = panelTools;
+                ToolsFromPlugins[ToolsFromPlugins.Count - 1].BackColor = Color.Transparent;
                 ToolsFromPlugins[ToolsFromPlugins.Count - 1].BorderStyle = BorderStyle.FixedSingle;
                 ToolsFromPlugins[ToolsFromPlugins.Count - 1].Location = (ToolsFromPlugins.Count == 1) ?
                     new Point(toolFrame.Location.X,
@@ -102,13 +103,23 @@ namespace GraphEditor
                         {
                             if (shape is ISelectable && ((ISelectable)shape).isHighLight(new Point(e.X, e.Y)))
                             {
-                                currTool.AddShapeToCentre(shape.byteBmp, shape.firstPoint, shape.lastPoint,
+                                currTool.AddShapeToCentre(ref shape.byteBmp, shape.firstPoint, shape.lastPoint,
                                     pictureDrawing.Width, pictureDrawing.Height);
+
+                                Bitmap bitmap = new Bitmap(displayManager.pictureDrawing.Width, displayManager.pictureDrawing.Height);
+                                Graphics tempGr = Graphics.FromImage(bitmap);
+                                tempGr.Clear(Color.White);
+
+                                OpenFile.WriteOnImage(tempGr, shapesList);
+
+                                displayManager.DeleteAll();
+                                displayManager.InitComponent(bitmap);
                                 return;
                             }
                         }
                         
                     }
+                    
                 }
                 numberAddTools = -1;
             }

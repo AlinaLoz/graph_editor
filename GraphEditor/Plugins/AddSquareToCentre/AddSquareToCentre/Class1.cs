@@ -14,7 +14,13 @@ namespace AddSquareToCentre
             return bitmap2;
         }
 
-        public void AddShapeToCentre(byte[] drawSurface, Point start, Point end, int displayWidth,
+        public byte[] ImageToByte(Bitmap img)
+        {
+            ImageConverter converter = new ImageConverter();
+            return (byte[])converter.ConvertTo(img, typeof(byte[]));
+        }
+
+        public void AddShapeToCentre(ref byte[] drawSurface, Point start, Point end, int displayWidth,
             int displayHeight)
         {
             int CenterX = (end.X - start.X) / 2 + start.X;
@@ -22,9 +28,9 @@ namespace AddSquareToCentre
             Pen pen = new Pen(Color.DarkRed, 5);
             Bitmap bitmap = new Bitmap(displayWidth, displayHeight);
             Graphics tempGr = Graphics.FromImage(bitmap);
-            tempGr.Clear(Color.White);
             tempGr.DrawImage(ByteToImage(drawSurface), 0, 0);
-            tempGr.DrawRectangle(pen, CenterX - 5, CenterY - 5, CenterX + 5, CenterY + 5);
+            tempGr.DrawRectangle(pen, CenterX - 5, CenterY - 5, 5, 5);
+            drawSurface = ImageToByte(bitmap);
         }
     }
 }
