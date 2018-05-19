@@ -61,7 +61,8 @@ namespace GraphEditor
                     new Point(toolFrame.Location.X,
                     toolFrame.Location.Y + toolFrame.Height + 5) :
                     new Point(ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.X,
-                    ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.Y + 5);
+                    ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.Y +
+                    ToolsFromPlugins[ToolsFromPlugins.Count - 2].Height + 5);
                 ToolsFromPlugins[ToolsFromPlugins.Count - 1].Size = new Size(25, 25);
                 ToolsFromPlugins[ToolsFromPlugins.Count - 1].MouseDown += new MouseEventHandler(ToolsFromPlugins_MouseDown);
             }
