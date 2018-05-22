@@ -1,15 +1,18 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
+using AddFigure;
+using ShapeSDK;
+using System.Runtime.Serialization;
 
-namespace GraphEditor
+namespace RectangleSDK
 {
-    class Rectangle : Shape, ISelectable
+    [DataContract]
+    public class RectangleM : Shape, ISelectable
     {
-        public Rectangle()
+        public RectangleM()
         {
         }
 
-        public bool isHighLight(Point currPoint)
+        public bool IsHighLight(Point currPoint)
         {
             bool firstCondition = (currPoint.X >= firstPoint.X) && (currPoint.X <= lastPoint.X);
             bool secondCondition = (currPoint.Y >= firstPoint.Y) && (currPoint.Y <= lastPoint.Y);
@@ -28,7 +31,5 @@ namespace GraphEditor
             Pen pen = new Pen(Color.Black, 1);
             drawSurface.DrawRectangle(pen, GetX(firstPoint, lastPoint), GetY(firstPoint, lastPoint), GetWidthShape(firstPoint, lastPoint), GetHightShape(firstPoint, lastPoint));
         }
-
-
     }
 }

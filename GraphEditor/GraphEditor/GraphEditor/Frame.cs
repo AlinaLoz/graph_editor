@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using ShapeSDK;
+using AddFigure;
 
 namespace GraphEditor
 {
@@ -42,7 +44,7 @@ namespace GraphEditor
         {
             foreach (Shape shape in listShape)
             {
-                if (shape is ISelectable && ((ISelectable)shape).isHighLight(currPoint))
+                if (shape is ISelectable && ((ISelectable)shape).IsHighLight(currPoint))
                 {
                     this.numberFigure = listShape.IndexOf(shape);
                     shape.bitmapCancel = false;

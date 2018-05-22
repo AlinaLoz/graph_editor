@@ -32,11 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AddSquareToCentre">
-      <HintPath>..\..\Plugins\AddSquareToCentre\AddSquareToCentre\bin\Debug\AddSquareToCentre.dll</HintPath>
+    <Reference Include="AddFigure">
+      <HintPath>..\..\Plugins\AddFigure\AddFigure\bin\Debug\AddFigure.dll</HintPath>
     </Reference>
-    <Reference Include="AddStyleToShape">
-      <HintPath>..\..\Plugins\AddSquareToCentre\AddSquareToCentre\bin\Debug\AddStyleToShape.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ShapeSDK, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Plugins\ShapeSDK\ShapeSDK\bin\Debug\ShapeSDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,12 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Circle.cs" />
     <Compile Include="CreateProductOpenFile.cs" />
     <Compile Include="CreateProductSaveFile.cs" />
     <Compile Include="Creator_File.cs" />
     <Compile Include="DisplayManager.cs" />
-    <Compile Include="Ellipse.cs" />
     <Compile Include="form.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,16 +67,11 @@
       <DependentUpon>form.cs</DependentUpon>
     </Compile>
     <Compile Include="Frame.cs" />
-    <Compile Include="ISelectable.cs" />
     <Compile Include="Product_File.cs" />
-    <Compile Include="Line.cs" />
     <Compile Include="OpenFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="Shape.cs" />
     <Compile Include="SaveFile.cs" />
-    <Compile Include="Triangle.cs" />
     <EmbeddedResource Include="form.resx">
       <DependentUpon>form.cs</DependentUpon>
     </EmbeddedResource>
@@ -87,6 +84,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

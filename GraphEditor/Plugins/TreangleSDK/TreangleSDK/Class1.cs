@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Drawing;
+using AddFigure;
+using System.Runtime.Serialization;
+using ShapeSDK;
 
-namespace GraphEditor
+namespace TreangleSDK
 {
-    class Triangle: Shape
+    [DataContract]
+    public class Triangle: Shape
     {
-
+        [DataMember]
         private Point[] point = new Point[3];
 
         public Triangle()
         {
             Array.Clear(point, 0, point.Length);
         }
+        
 
         public override void Draw(Graphics drawSurface)
         {

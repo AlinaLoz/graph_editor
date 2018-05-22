@@ -6,8 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using AddSquareToCentre;
-using AddStyleToShape;
+using ShapeSDK;
+using AddFigure;
 
 namespace GraphEditor
 {
@@ -20,7 +20,6 @@ namespace GraphEditor
         DisplayManager displayManager;
         Boolean isMouseClick;
         Frame frame;
-
         Keys prevKey, currKey;
         String nameWorkFile;
         bool isCtrlZ;
@@ -38,33 +37,31 @@ namespace GraphEditor
             string currentDir = Path.GetDirectoryName(
                Assembly.GetEntryAssembly().Location);
 
-            string addinsDir = Path.Combine(currentDir, "MyPlugins");
-            string[] addinAssemblies = Directory.GetFiles(addinsDir, "*.dll");
+            string[] addinAssemblies = Directory.GetFiles(currentDir, "*.dll");
 
             foreach (string file in addinAssemblies)
             {
                 Assembly addinAssembly = Assembly.LoadFrom(file);
                 foreach (Type t in addinAssembly.GetExportedTypes())
                 {
-                    if (t.IsClass && typeof(IAddStyleToShape).IsAssignableFrom(t))
+                    if ((t).IsSubclassOf(typeof(Shape)) && t.IsClass && !t.IsAbstract && (typeof(ISelectable).IsAssignableFrom(t) || !typeof(ISelectable).IsAssignableFrom(t)) )
+                    {
                         addinTypes.Add(t);
+                        ToolsFromPlugins.Add(new PictureBox());
+                        ToolsFromPlugins[ToolsFromPlugins.Count - 1].Name = "bpNewTools/" + addinTypes.IndexOf(t);
+                        ToolsFromPlugins[ToolsFromPlugins.Count - 1].Parent = panelTools;
+                        ToolsFromPlugins[ToolsFromPlugins.Count - 1].BackColor = Color.Transparent;
+                        ToolsFromPlugins[ToolsFromPlugins.Count - 1].BorderStyle = BorderStyle.FixedSingle;
+                        ToolsFromPlugins[ToolsFromPlugins.Count - 1].Location = (ToolsFromPlugins.Count == 1) ?
+                            new Point(toolFrame.Location.X,
+                            toolFrame.Location.Y + toolFrame.Height + 5) :
+                            new Point(ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.X,
+                            ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.Y +
+                            ToolsFromPlugins[ToolsFromPlugins.Count - 2].Height + 5);
+                        ToolsFromPlugins[ToolsFromPlugins.Count - 1].Size = new Size(25, 25);
+                        ToolsFromPlugins[ToolsFromPlugins.Count - 1].MouseDown += new MouseEventHandler(ToolsFromPlugins_MouseDown);
+                    }   
                 }
-            }
-            foreach (Type typePlugin in addinTypes)
-            {
-                ToolsFromPlugins.Add(new PictureBox());
-                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Name = "bpNewTools/" + addinTypes.IndexOf(typePlugin);
-                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Parent = panelTools;
-                ToolsFromPlugins[ToolsFromPlugins.Count - 1].BackColor = Color.Transparent;
-                ToolsFromPlugins[ToolsFromPlugins.Count - 1].BorderStyle = BorderStyle.FixedSingle;
-                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Location = (ToolsFromPlugins.Count == 1) ?
-                    new Point(toolFrame.Location.X,
-                    toolFrame.Location.Y + toolFrame.Height + 5) :
-                    new Point(ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.X,
-                    ToolsFromPlugins[ToolsFromPlugins.Count - 2].Location.Y +
-                    ToolsFromPlugins[ToolsFromPlugins.Count - 2].Height + 5);
-                ToolsFromPlugins[ToolsFromPlugins.Count - 1].Size = new Size(25, 25);
-                ToolsFromPlugins[ToolsFromPlugins.Count - 1].MouseDown += new MouseEventHandler(ToolsFromPlugins_MouseDown);
             }
         }
 
@@ -79,52 +76,9 @@ namespace GraphEditor
             displayManager.DeleteAll();
         }
 
-        public static T CloneObject<T>( T obj) where T : class
-        {
-            if (obj == null) return null;
-            System.Reflection.MethodInfo inst = obj.GetType().GetMethod("MemberwiseClone",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            if (inst != null)
-                return (T)inst.Invoke(obj, null);
-            else
-                return null;
-        }
-
         private void pictureDrawing_MouseDown(object sender, MouseEventArgs e)
         {
             Point startPoint = new Point(e.X, e.Y);
-            if (numberAddTools != -1)
-            {
-                foreach (Type typePlugin in addinTypes)
-                {
-                    if (addinTypes.IndexOf(typePlugin) == numberAddTools)
-                    {
-                        IAddStyleToShape currTool = (IAddStyleToShape)Activator.CreateInstance(typePlugin);
-                        foreach (Shape shape in shapesList)
-                        {
-                            if (shape is ISelectable && ((ISelectable)shape).isHighLight(new Point(e.X, e.Y)))
-                            {
-                                currTool.AddShapeToCentre(ref shape.byteBmp, shape.firstPoint, shape.lastPoint,
-                                    pictureDrawing.Width, pictureDrawing.Height);
-
-                                Bitmap bitmap = new Bitmap(displayManager.pictureDrawing.Width, displayManager.pictureDrawing.Height);
-                                Graphics tempGr = Graphics.FromImage(bitmap);
-                                tempGr.Clear(Color.White);
-
-                                OpenFile.WriteOnImage(tempGr, shapesList);
-
-                                displayManager.DeleteAll();
-                                displayManager.InitComponent(bitmap);
-                                return;
-                            }
-                        }
-                        
-                    }
-                    
-                }
-                numberAddTools = -1;
-            }
-            else
                 if (frame != null)
                 {
                     if (!frame.IsExistFrame && frame.CreateFrame(shapesList, startPoint, pictureDrawing))
@@ -157,16 +111,13 @@ namespace GraphEditor
                     }
                 }
                 else {
-                    if (shapesList.Count > 0)
+                    if (numberAddTools != -1)
                     {
                         isMouseClick = true;
-                        if (shapesList.Last().firstPoint.X != 0)
-                        {
-                            shapesList.Add(CloneObject(shapesList.Last()));
-                        }
+                        shapesList.Add((Shape)Activator.CreateInstance(addinTypes[numberAddTools]));
                         shapesList.Last().setFirstPoint(new Point(e.X, e.Y));
-                    }  
-                } 
+                    }
+                }
         }
 
         private void pictureDrawing_MouseMove(object sender, MouseEventArgs e)
@@ -219,12 +170,12 @@ namespace GraphEditor
                 if (MessageBox.Show("Save As File?", "Save as", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     saveFile.initTool("Сохранить картинку как...", true);
-                    saveFile.workWithFile(shapesList, ref displayManager, ref nameWorkFile);
+                    saveFile.workWithFile(shapesList, ref displayManager, ref nameWorkFile, addinTypes);
                 }
             }
             else
             {
-                saveFile.save(shapesList, nameWorkFile);
+                saveFile.save(shapesList, nameWorkFile, addinTypes);
             }
         }
 
@@ -233,7 +184,7 @@ namespace GraphEditor
             Creator_File creator = new CreateProductSaveFile() ;
             Product_File saveFile = creator.FactoryMethod();
             saveFile.initTool("Сохранить картинку как...", true);
-            saveFile.workWithFile(shapesList, ref displayManager, ref nameWorkFile);
+            saveFile.workWithFile(shapesList, ref displayManager, ref nameWorkFile, addinTypes);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -241,7 +192,7 @@ namespace GraphEditor
             Creator_File creator = new CreateProductOpenFile();
             Product_File openFile = creator.FactoryMethod();
             openFile.initTool("Открыть картинку", true);
-            openFile.workWithFile(shapesList, ref displayManager, ref nameWorkFile);
+            openFile.workWithFile(shapesList, ref displayManager, ref nameWorkFile, addinTypes);
         }
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
@@ -324,31 +275,6 @@ namespace GraphEditor
                  OpenFile.WriteOnImage(tempGr, shapesList);
                  displayManager.InitComponent(bitmap);
             }
-        }
-
-        private void toolCircle_Click(object sender, EventArgs e)
-        {
-            shapesList.Add(new Circle());
-        }
-
-        private void toolRectangle_Click(object sender, EventArgs e)
-        {
-            shapesList.Add(new Rectangle());
-        }
-
-        private void toolElipse_Click(object sender, EventArgs e)
-        {
-            shapesList.Add(new Ellipse());
-        }
-
-        private void toolLine_Click(object sender, EventArgs e)
-        {
-            shapesList.Add(new Line());
-        }
-
-        private void toolTreangle_Click(object sender, EventArgs e)
-        {
-            shapesList.Add(new Triangle());
         }
     }
 }

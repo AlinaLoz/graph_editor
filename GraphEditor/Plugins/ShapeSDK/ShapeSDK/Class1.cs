@@ -1,13 +1,13 @@
-﻿using System.Drawing;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using System.IO;
+using System.Drawing;
 using System;
 
-namespace GraphEditor
+namespace ShapeSDK
 {
     [DataContract]
-    abstract class Shape
-     {
+    public abstract class Shape
+    {
         [DataMember]
         public Point firstPoint;
 
@@ -17,7 +17,9 @@ namespace GraphEditor
         [DataMember]
         public byte[] byteBmp;
 
+        [DataMember]
         public bool bitmapCancel;
+
 
         public void setFirstPoint(Point point)
         {
@@ -47,8 +49,6 @@ namespace GraphEditor
             return (byte[])converter.ConvertTo(img, typeof(byte[]));
         }
 
-        public abstract void Draw(Graphics drawSurface);
-
         public void changeLocation(int pictureDrawingWidth, int pictureDrawingHeight)
         {
             Bitmap bm = new Bitmap(pictureDrawingWidth, pictureDrawingHeight);
@@ -57,7 +57,10 @@ namespace GraphEditor
             byteBmp = ImageToByte(bm);
         }
 
-        protected static float GetWidthShape(Point first, Point second) {
+        public abstract void Draw(Graphics drawSurface);
+
+        protected static float GetWidthShape(Point first, Point second)
+        {
             return Math.Abs(first.X - second.X);
         }
 

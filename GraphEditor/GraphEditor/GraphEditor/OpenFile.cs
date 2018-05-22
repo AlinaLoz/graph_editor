@@ -4,6 +4,9 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Collections.Generic;
+using ShapeSDK;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace GraphEditor
 {
@@ -29,7 +32,8 @@ namespace GraphEditor
             }
         }
 
-        public override void workWithFile(List<Shape> shapesList, ref DisplayManager displayManager, ref string nameWorkFile)
+        public override void workWithFile(List<Shape> shapesList, ref DisplayManager displayManager,
+            ref string nameWorkFile, List<System.Type> addInType)
         {
             try
             {
@@ -37,15 +41,39 @@ namespace GraphEditor
                 nameWorkFile = Path.GetFullPath(opendialog.FileName);
                 if (!String.Equals(opendialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort)
                 {
-                    Type[] knownTypes = new[] { typeof(Circle), typeof(Rectangle), typeof(Line),
-                    typeof(Ellipse) };
-                    DataContractJsonSerializer jsonFormatter = new DataContractJsonSerializer(shapesList.GetType(), knownTypes);
-                    using (FileStream fs = new FileStream(nameWorkFile, FileMode.OpenOrCreate))
+                    FileStream fs = new FileStream(nameWorkFile, FileMode.OpenOrCreate);
+                    shapesList.Clear();
+                    byte[] messageBytes = new byte[fs.Length];
+
+                    fs.Read(messageBytes, 0, messageBytes.Length);
+                    string jsonString = Encoding.ASCII.GetString(messageBytes);
+                    dynamic tmpList = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(jsonString);
+                    List<dynamic> outputList = new List<dynamic>();
+
+                    foreach (dynamic element in tmpList)
                     {
-                        shapesList.Clear();
-                        shapesList = jsonFormatter.ReadObject(fs) as List<Shape>;
-                        fs.Close();
+                        {
+                           foreach (Type type in addInType)
+                            {
+                                if (element["__type"].ToString().IndexOf(type.Name.ToString()) != -1)
+                                {
+                                    outputList.Add(element);
+                                    break;
+                                }
+                            }
+                        }
                     }
+
+                    FileStream tmpStream = new FileStream("tmpFile.json", FileMode.Create);
+                    jsonString = JsonConvert.SerializeObject(outputList);
+
+                    tmpStream.Write(Encoding.ASCII.GetBytes(jsonString), 0, Encoding.ASCII.GetBytes(jsonString).Length);
+                    tmpStream.Close();
+                    string json = File.ReadAllText("tmpFile.json");
+                    var serializer = new DataContractJsonSerializer(typeof(List<Shape>), addInType);
+                    shapesList = (List<Shape>)serializer.ReadObject(
+                            new MemoryStream(Encoding.Unicode.GetBytes(json)));
+
                     Bitmap bitmap = new Bitmap(displayManager.pictureDrawing.Width, displayManager.pictureDrawing.Height);
                     Graphics tempGr = Graphics.FromImage(bitmap);
                     tempGr.Clear(Color.White);
@@ -59,9 +87,7 @@ namespace GraphEditor
             catch
             {
                 MessageBox.Show("Неправильный файл", "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
-               // MessageBox.Show(ex.ToString(), "warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
         public override void initTool(string title, bool CheckPathExists) {

@@ -2,8 +2,9 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Json;
-using System.Drawing;
 using System.Collections.Generic;
+using ShapeSDK;
+
 
 namespace GraphEditor
 {
@@ -16,12 +17,10 @@ namespace GraphEditor
             savedialog = new SaveFileDialog();
         }
 
-        public void save(List<Shape> shapesList, string nameWorkFile) {
+        public void save(List<Shape> shapesList, string nameWorkFile, List<Type> addInType) {
             try
             {
-                Type[] knownTypes = new[] { typeof(Circle), typeof(Rectangle), typeof(Line),
-                    typeof(Ellipse) };
-                jsonFormatter = new DataContractJsonSerializer(typeof(List<Shape>), knownTypes);
+                jsonFormatter = new DataContractJsonSerializer(typeof(List<Shape>), addInType);
                 using (FileStream fs = new FileStream(nameWorkFile, FileMode.Create))
                 {
                     jsonFormatter.WriteObject(fs, shapesList);
@@ -35,12 +34,12 @@ namespace GraphEditor
             }
         }
 
-        public override void workWithFile(List<Shape> shapesList, ref DisplayManager displayManage, ref string nameWorkFile) {
+        public override void workWithFile(List<Shape> shapesList, ref DisplayManager displayManage, ref string nameWorkFile, List<Type> addInType) {
             DialogResult dialogResult = savedialog.ShowDialog();
             nameWorkFile = Path.GetFullPath(savedialog.FileName);
             MessageBox.Show(nameWorkFile, "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
             if (!String.Equals(savedialog.FileName, "") && dialogResult != DialogResult.Cancel && dialogResult != DialogResult.Abort) 
-                save(shapesList,  nameWorkFile);
+                save(shapesList,  nameWorkFile, addInType);
         }
 
         public override void initTool(string title, bool CheckPathExists)

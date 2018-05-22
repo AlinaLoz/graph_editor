@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EllipseSDK", "EllipseSDK\EllipseSDK.csproj", "{F6F7A719-344F-41E6-A7D3-BB6B0C369AE3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F6F7A719-344F-41E6-A7D3-BB6B0C369AE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6F7A719-344F-41E6-A7D3-BB6B0C369AE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6F7A719-344F-41E6-A7D3-BB6B0C369AE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6F7A719-344F-41E6-A7D3-BB6B0C369AE3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB95D4C2-3B0E-4BD7-966A-0BE0019D8549}
+	EndGlobalSection
+EndGlobal
